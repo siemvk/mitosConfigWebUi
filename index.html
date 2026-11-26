@@ -1,0 +1,2792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mitos Config WebUI</title>
+<style>
+  :root {
+    --bg: #111318;
+    --surface: #181b22;
+    --surface-2: #1f232d;
+    --border: #2c3240;
+    --text: #e8ecf4;
+    --muted: #8b94a8;
+    --accent: #4c8dff;
+    --accent-bg: rgba(76, 141, 255, 0.16);
+    --override: #f59e0b;
+    --override-bg: rgba(245, 158, 11, 0.16);
+    --prefix: #a855f7;
+    --prefix-bg: rgba(168, 85, 247, 0.18);
+    --danger: #ef4444;
+    --key-bg: #232731;
+    --key-hover: #2c3240;
+    --key-border: #343b4c;
+    --chassis: #1a1d24;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1000px 420px at 50% -120px, rgba(76, 141, 255, 0.12), transparent 65%),
+      radial-gradient(700px 360px at 85% 0%, rgba(168, 85, 247, 0.08), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.4;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 22px;
+    background: rgba(24, 27, 34, 0.86);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 650;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+  .brand-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--prefix));
+  }
+  .file-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface-2);
+    padding: 2px 8px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+  }
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  button, .btn {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 6px 11px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, transform 0.06s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  button:hover { background: #272c38; border-color: #3e4659; }
+  button:active { transform: translateY(0.5px); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: #3b7ef2; }
+  button.prefix-btn { background: var(--prefix); border-color: var(--prefix); color: #fff; }
+  button.prefix-btn:hover { background: #9333ea; }
+  button.danger { color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); }
+  button.danger:hover { background: rgba(239, 68, 68, 0.15); }
+  button.active { background: var(--accent-bg); border-color: var(--accent); color: #fff; }
+
+  main {
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 16px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Controls row */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .seg-group {
+    display: inline-flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .seg-btn {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    padding: 5px 11px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .seg-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .seg-btn.active { background: var(--surface-2); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
+  /* macOS-style switch */
+  .switch-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .switch-label input {
+    appearance: none;
+    width: 34px;
+    height: 20px;
+    border-radius: 99px;
+    background: #2f3545;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid var(--border);
+    margin: 0;
+  }
+  .switch-label input::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s;
+  }
+  .switch-label input:checked { background: var(--accent); border-color: var(--accent); }
+  .switch-label input:checked::after { transform: translateX(14px); }
+
+  /* Breadcrumb & Sub-keymaps bar */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .crumb {
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .crumb:hover { border-color: var(--accent); }
+  .crumb.current { background: var(--prefix-bg); border-color: var(--prefix); color: #e9d5ff; }
+  .crumb-sep { color: var(--muted); }
+  .submap-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .submap-label { font-size: 12px; color: var(--muted); }
+  .chip {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--prefix-bg);
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    color: #e9d5ff;
+    cursor: pointer;
+  }
+  .chip:hover { background: rgba(168, 85, 247, 0.3); }
+  .chip.is-default-chip {
+    background: var(--surface-2);
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  .chip.is-default-chip:hover { color: var(--text); border-color: var(--prefix); }
+
+  /* Mac Keyboard Chassis */
+  .keyboard-chassis {
+    background: linear-gradient(180deg, #21252f 0%, #161921 100%);
+    border: 1px solid #32394a;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow:
+      0 20px 44px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    overflow-x: auto;
+  }
+  .kb-row {
+    display: flex;
+    gap: 7px;
+    min-width: 920px;
+  }
+
+  .key {
+    position: relative;
+    flex: var(--u, 1) 1 0%;
+    height: 72px;
+    background: var(--key-bg);
+    border: 1px solid var(--key-border);
+    border-bottom-width: 3px;
+    border-radius: 9px;
+    padding: 6px 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s, border-color 0.12s, box-shadow 0.12s, transform 0.06s;
+    overflow: hidden;
+    text-align: left;
+    color: var(--text);
+  }
+  .kb-row.fn-row .key { height: 44px; padding: 4px 6px; }
+  .key:hover { background: var(--key-hover); border-color: #55617a; transform: translateY(-1px); }
+  .key:active { transform: translateY(0); }
+  .key.is-selected {
+    box-shadow: 0 0 0 2px var(--accent), 0 4px 14px rgba(76, 141, 255, 0.3);
+    border-color: var(--accent);
+    z-index: 2;
+  }
+
+  /* Binding state visuals */
+  .key.is-custom {
+    background: linear-gradient(180deg, rgba(76, 141, 255, 0.28), rgba(76, 141, 255, 0.12));
+    border-color: rgba(76, 141, 255, 0.75);
+  }
+  .key.is-override {
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.28), rgba(245, 158, 11, 0.11));
+    border-color: rgba(245, 158, 11, 0.75);
+  }
+  .key.is-prefix {
+    background: linear-gradient(180deg, rgba(168, 85, 247, 0.3), rgba(168, 85, 247, 0.13));
+    border-color: rgba(168, 85, 247, 0.8);
+  }
+  .key.is-prefix.is-default {
+    background: linear-gradient(180deg, rgba(168, 85, 247, 0.12), rgba(32, 36, 46, 0.96));
+    border-color: rgba(168, 85, 247, 0.35);
+  }
+  .key.is-default {
+    background: #1d212b;
+    border-color: #2b3140;
+  }
+  .key.is-unbound {
+    background: #171a22;
+    border-color: #222734;
+    color: #555d70;
+  }
+  .key.is-mod-key {
+    background: #1b1f28;
+    border-color: #2d3342;
+    color: var(--muted);
+  }
+  .key.is-mod-key.mod-active {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+  .key.is-disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .key.is-disabled:hover { transform: none; }
+
+  .key-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3px;
+    width: 100%;
+  }
+  .key-legend {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .key.is-default .key-legend { color: #b2bacb; font-weight: 600; }
+  .key-sublegend {
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .key-badge {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    padding: 1px 5px;
+    border-radius: 99px;
+    background: rgba(168, 85, 247, 0.4);
+    color: #f3e8ff;
+    font-weight: 600;
+  }
+  .key.is-default .key-badge {
+    background: rgba(168, 85, 247, 0.18);
+    color: #c4b5fd;
+  }
+  .key-cmd {
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #f4f7ff;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+  }
+  .key-cmd.raw-mode {
+    font-family: var(--mono);
+    font-size: 9.5px;
+  }
+  .key.is-default .key-cmd { color: #8c96ad; font-weight: 400; }
+  .key.is-unbound .key-cmd { color: #464d5e; }
+  .key-mod-label {
+    font-size: 10.5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+  }
+  .key-mod-sym { font-size: 13px; }
+  .key-mod-name { font-size: 10px; }
+
+  /* Inverted-T Mac Arrow Cluster */
+  .arrow-cluster {
+    flex: 3 1 0%;
+    display: flex;
+    gap: 4px;
+    height: 72px;
+  }
+  .arrow-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .arrow-col.half-bottom { justify-content: flex-end; }
+  .arrow-cluster .key {
+    height: 34px;
+    padding: 3px 6px;
+    flex: none;
+  }
+  .arrow-cluster .key-cmd { -webkit-line-clamp: 1; font-size: 9.5px; }
+
+  .menu-banner {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: var(--prefix-bg);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    font-size: 12.5px;
+    color: #f3e8ff;
+  }
+  .menu-banner.show { display: flex; }
+  .linked-keys {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .linked-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--prefix-bg);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    color: #f3e8ff;
+  }
+  .linked-pill button {
+    border: none;
+    background: transparent;
+    color: #d8b4fe;
+    padding: 0 2px;
+    font-size: 12px;
+    line-height: 1;
+  }
+  .linked-pill button:hover { color: #fff; background: transparent; }
+
+  .bind-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-left: 6px;
+    opacity: 0.8;
+  }
+  .count-pill {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 2px 8px;
+    font-weight: 500;
+  }
+  button.dirty {
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5);
+    background: var(--override);
+    border-color: var(--override);
+    color: #111;
+  }
+  button.dirty:hover { background: #fbbf24; }
+
+  /* Legend row */
+  .legend {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0 2px;
+  }
+  .legend-items { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    margin-right: 5px;
+    vertical-align: -1px;
+  }
+
+  /* Bottom panels: Inspector + Bindings list */
+  .panels {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 900px) {
+    .panels { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .card-title { font-weight: 600; font-size: 14px; margin: 0; }
+  .chord-pill {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+  .status-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tag-custom { background: var(--accent-bg); color: #93c5fd; }
+  .tag-override { background: var(--override-bg); color: #fcd34d; }
+  .tag-prefix { background: var(--prefix-bg); color: #d8b4fe; }
+  .tag-default { background: var(--surface-2); color: var(--muted); }
+  .tag-unbound { background: #1c202a; color: #64748b; }
+
+  label.field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  input[type="text"], textarea, select {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-family: var(--mono);
+    font-size: 13px;
+    width: 100%;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 76px; }
+  .inspector-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .default-hint {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-family: var(--mono);
+  }
+
+  /* Bindings table */
+  .bind-list {
+    max-height: 290px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .bind-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 9px;
+    border-radius: 7px;
+    background: var(--bg);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .bind-row:hover { border-color: var(--border); background: #151821; }
+  .bind-row.selected { border-color: var(--accent); background: var(--accent-bg); }
+  .bind-key { font-weight: 600; color: var(--text); min-width: 64px; }
+  .bind-val { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; text-align: right; }
+  .bind-row.is-custom .bind-val { color: #93c5fd; }
+  .bind-row.is-override .bind-val { color: #fcd34d; }
+  .bind-row.is-prefix .bind-val { color: #d8b4fe; }
+
+  /* Raw TOML panel */
+  .toml-panel {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .toml-panel.open { display: flex; }
+  .toml-panel textarea { min-height: 210px; font-size: 12.5px; line-height: 1.45; }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #232836;
+    color: var(--text);
+    border: 1px solid var(--accent);
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.16s, transform 0.16s;
+    z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .drop-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 19, 24, 0.84);
+    border: 3px dashed var(--accent);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .drop-overlay.show { display: flex; }
+
+  /* Rich hover explanation popover */
+  .key-tooltip {
+    position: fixed;
+    z-index: 60;
+    pointer-events: none;
+    width: 280px;
+    max-width: calc(100vw - 24px);
+    background: rgba(22, 26, 34, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid #3b4459;
+    border-radius: 11px;
+    padding: 10px 12px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.1s ease, transform 0.1s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .key-tooltip.show { opacity: 1; transform: translateY(0); }
+  .tt-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .tt-chord {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .tt-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .tt-raw {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #93c5fd;
+    background: rgba(76, 141, 255, 0.12);
+    padding: 2px 6px;
+    border-radius: 5px;
+    align-self: flex-start;
+    word-break: break-all;
+  }
+  .tt-desc {
+    font-size: 12px;
+    color: #b7c0d4;
+    line-height: 1.4;
+  }
+  .tt-sub {
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .tt-preview-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .tt-preview-row span:first-child { color: #e9d5ff; font-weight: 600; }
+  .tt-preview-row span:last-child { color: #b7c0d4; font-family: var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .cmd-desc-hint {
+    font-size: 12px;
+    color: #a8b3ca;
+    margin-top: 2px;
+  }
+
+  /* Compact header overflow menu */
+  .more-menu { position: relative; }
+  .more-menu summary {
+    list-style: none;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+  }
+  .more-menu summary::-webkit-details-marker { display: none; }
+  .more-menu summary:hover { background: #272c38; border-color: #3e4659; }
+  .more-menu-list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 5px;
+    min-width: 170px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+    z-index: 30;
+  }
+  .more-menu-list button {
+    border: none;
+    background: transparent;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 6px;
+  }
+  .more-menu-list button:hover { background: var(--surface-2); }
+  .more-menu-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 6px;
+  }
+  .more-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .more-menu-toggle:hover { background: var(--surface-2); }
+
+  /* Collapsible stats sub-menu */
+  .stats-panel { display: none; }
+  .stats-panel.open { display: flex; }
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stat-val {
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .stat-val.accent { color: #93c5fd; }
+  .stat-val.override { color: #fcd34d; }
+  .stat-val.prefix { color: #d8b4fe; }
+  .stat-val.mono { font-family: var(--mono); font-size: 13px; padding-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  /* ---- UI polish ---- */
+  .header-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .file-badge { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-badge.dirty { color: #fcd34d; border-color: rgba(245, 158, 11, 0.5); }
+  .file-badge.dirty::after { content: " •"; }
+  .icon-btn { padding: 6px 9px; font-size: 14px; line-height: 1; }
+  .toolbar-sep { width: 1px; height: 20px; background: var(--border); margin: 0 2px; }
+  button:disabled { opacity: 0.35; cursor: default; }
+  button:disabled:hover { background: var(--surface-2); border-color: var(--border); }
+  button:focus-visible, summary:focus-visible, .key:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Key command text aligned consistently on wide keys */
+  .key-cmd { width: 100%; text-align: left; }
+
+  /* Arrow keys: legend + command on one line so nothing clips */
+  .arrow-cluster .key { flex-direction: row; align-items: center; justify-content: flex-start; gap: 5px; }
+  .arrow-cluster .key-top { width: auto; flex: none; }
+  .arrow-cluster .key-legend { font-size: 9px; }
+  .arrow-cluster .key-cmd { display: block; width: auto; flex: 1; min-width: 0; white-space: nowrap; text-overflow: ellipsis; }
+
+  @keyframes key-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(76, 141, 255, 0.7); }
+    100% { box-shadow: 0 0 0 10px rgba(76, 141, 255, 0); }
+  }
+  .key.is-selected.pulse { animation: key-pulse 0.45s ease-out; }
+
+  .legend-hint { font-size: 12px; color: var(--muted); }
+  .legend-hint kbd, .tips kbd {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    color: var(--text);
+  }
+  .legend-hint.mods-on { color: #93c5fd; }
+  .legend-hint button { padding: 2px 8px; font-size: 11.5px; margin-left: 6px; }
+
+  /* Inspector empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    padding: 28px 12px;
+    flex: 1;
+    color: var(--muted);
+  }
+  .empty-icon {
+    font-size: 26px;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: var(--accent-bg);
+    color: #93c5fd;
+    margin-bottom: 6px;
+  }
+  .empty-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .empty-sub { font-size: 13px; }
+  .tips {
+    list-style: none;
+    padding: 0;
+    margin: 14px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 12.5px;
+    text-align: left;
+  }
+
+  /* Bindings list: scannable left-aligned columns with status dot */
+  .bind-list { max-height: 360px; }
+  .bind-row { justify-content: flex-start; }
+  .bind-row::before {
+    content: "";
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3a4254;
+  }
+  .bind-row.is-custom::before { background: var(--accent); }
+  .bind-row.is-override::before { background: var(--override); }
+  .bind-row.is-prefix::before { background: var(--prefix); }
+  .bind-key {
+    flex: none;
+    min-width: 0;
+    width: 78px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bind-val { text-align: left; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="brand"><span class="brand-dot"></span>Mitos Keys</div>
+    <div class="seg-group" id="modeTabs"></div>
+    <span class="file-badge" id="fileBadge"></span>
+  </div>
+  <div class="toolbar">
+    <input type="file" id="fileInput" accept=".toml,text/plain" hidden>
+    <button id="undoBtn" class="icon-btn" title="Undo (⌘Z)" disabled>↶</button>
+    <button id="redoBtn" class="icon-btn" title="Redo (⇧⌘Z)" disabled>↷</button>
+    <span class="toolbar-sep"></span>
+    <button id="statsToggleBtn">Stats</button>
+    <button id="rawToggleBtn">Raw TOML</button>
+    <button id="reloadBtn" style="display:none" title="Reload from disk">Reload</button>
+    <button id="saveFileBtn" class="primary">Download</button>
+    <details class="more-menu" id="moreMenu">
+      <summary title="More options">⋯</summary>
+      <div class="more-menu-list" style="min-width:210px;">
+        <label class="switch-label more-menu-toggle" title="Show short readable names instead of raw Mitos command IDs">
+          <span>Friendly names</span>
+          <input type="checkbox" id="friendlyNamesToggle" checked>
+        </label>
+        <label class="switch-label more-menu-toggle" title="Hide default Mitos bindings that you haven't customized">
+          <span>Hide defaults</span>
+          <input type="checkbox" id="hideDefaultsToggle">
+        </label>
+        <div class="more-menu-divider"></div>
+        <button id="openBtn">Open config.toml…</button>
+        <button id="downloadBtn">Download TOML</button>
+        <button id="copyBtn">Copy TOML</button>
+        <button id="sampleBtn">Load Sample</button>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main>
+  <!-- Stats Sub-menu -->
+  <section class="card stats-panel" id="statsPanel" aria-label="Config Statistics">
+    <div class="stats-strip" id="statsStrip"></div>
+  </section>
+
+  <!-- Raw TOML Drawer -->
+  <section class="card toml-panel" id="tomlPanel">
+    <div class="card-head">
+      <h2 class="card-title">Raw config.toml</h2>
+      <div class="toolbar">
+        <button id="applyRawBtn" class="primary">Apply TOML</button>
+        <button id="clearCustomBtn" class="danger">Clear All Custom Keys</button>
+      </div>
+    </div>
+    <textarea id="rawToml" spellcheck="false" placeholder="Paste your ~/.config/mitos/config.toml here..."></textarea>
+    <div id="parseError" style="color:#fca5a5;font-family:var(--mono);font-size:12px;display:none;"></div>
+  </section>
+
+  <!-- Shared Menu Sync Banner -->
+  <div class="menu-banner" id="menuBanner">
+    <span id="menuBannerText"></span>
+  </div>
+
+  <!-- Prefix Breadcrumb & Quick Sub-keymap Chips -->
+  <div class="nav-bar">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="submap-chips" id="submapChips"></div>
+  </div>
+
+  <!-- Authentic Mac Keyboard -->
+  <section class="keyboard-chassis" id="keyboard" aria-label="Mac Keyboard Layout"></section>
+
+  <div class="legend">
+    <div class="legend-items">
+      <span><span class="legend-dot" style="background:var(--accent)"></span>Custom</span>
+      <span><span class="legend-dot" style="background:var(--override)"></span>Overrides Default</span>
+      <span><span class="legend-dot" style="background:var(--prefix)"></span>Sub-keymap</span>
+      <span><span class="legend-dot" style="background:#3a4254"></span>Default</span>
+    </div>
+    <div class="legend-hint" id="legendHint"></div>
+  </div>
+
+  <!-- Key Inspector + Current Layer List -->
+  <section class="panels">
+    <div class="card" id="inspectorCard">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <h2 class="card-title">Key Inspector</h2>
+          <span class="chord-pill" id="inspectorChord">Select a key</span>
+          <span class="status-tag tag-unbound" id="inspectorTag">None</span>
+        </div>
+        <button id="enterPrefixBtn" class="prefix-btn" style="display:none">Enter sub-keymap →</button>
+      </div>
+
+      <div id="inspectorEmpty" class="empty-state">
+        <div class="empty-icon">⌨</div>
+        <div class="empty-title">Pick a key to edit</div>
+        <div class="empty-sub">Click a key above, or just press it on your keyboard.</div>
+        <ul class="tips">
+          <li><kbd>double-click</kbd> or press twice to open a sub-keymap</li>
+          <li><kbd>⇧</kbd> <kbd>⌃</kbd> <kbd>⌥</kbd> on the keyboard switch modifier layers</li>
+          <li><kbd>esc</kbd> go up a level / clear modifiers</li>
+          <li><kbd>⌘Z</kbd> undo · <kbd>⇧⌘Z</kbd> redo</li>
+        </ul>
+      </div>
+
+      <div id="inspectorForm" style="display:none;flex-direction:column;gap:11px;">
+        <div class="default-hint" id="defaultHint" style="display:none"></div>
+
+        <label class="field">
+          <span>Binding Type</span>
+          <select id="bindType">
+            <option value="command">Single Command (e.g. move_char_left or :write)</option>
+            <option value="sequence">Command Sequence / Macro (array of commands)</option>
+            <option value="prefix">Sub-keymap / Prefix Chord (e.g. q + something)</option>
+            <option value="noop">Unbind (no_op)</option>
+          </select>
+        </label>
+
+        <label class="field" id="cmdField">
+          <span>Command</span>
+          <input type="text" id="cmdInput" list="mitosCommands" placeholder="e.g. :write, file_picker, Save, Copy">
+          <datalist id="mitosCommands"></datalist>
+          <span class="cmd-desc-hint" id="cmdDescHint"></span>
+        </label>
+
+        <label class="field" id="seqField" style="display:none">
+          <span>Commands (one per line)</span>
+          <textarea id="seqInput" placeholder="collapse_selection&#10;normal_mode"></textarea>
+        </label>
+
+        <div id="prefixInfo" style="display:none;flex-direction:column;gap:8px;font-size:12.5px;color:#e9d5ff;background:var(--prefix-bg);border:1px solid rgba(168,85,247,0.4);border-radius:7px;padding:10px 11px;">
+          <label class="field" style="color:#e9d5ff;">
+            <span>Shared Menu Name (optional — reuse a name to link keys)</span>
+            <input type="text" id="menuNameInput" list="sharedMenuNames" placeholder="e.g. quicklist">
+            <datalist id="sharedMenuNames"></datalist>
+          </label>
+          <label class="switch-label" style="font-size:12px;color:#e9d5ff;">
+            <input type="checkbox" id="linkAllNonInsert">
+            <span>Link in all non-insert modes (normal &amp; select)</span>
+          </label>
+          <div id="linkedKeysWrap" style="display:none;">
+            <div style="font-size:11.5px;color:#d8b4fe;margin-bottom:4px;">Keys bound to this shared menu:</div>
+            <div class="linked-keys" id="linkedKeysList"></div>
+            <div style="display:flex;gap:6px;margin-top:7px;">
+              <input type="text" id="addLinkedKeyInput" placeholder="Add key (e.g. b, minus, C-q)" style="flex:1;padding:5px 8px;font-size:12px;">
+              <button type="button" id="addLinkedKeyBtn" class="prefix-btn" style="padding:5px 10px;">+ Link Key</button>
+            </div>
+          </div>
+        </div>
+
+        <label class="switch-label" id="mirrorModeWrap" style="display:none;font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;">
+          <input type="checkbox" id="mirrorModeToggle">
+          <span id="mirrorModeLabel">Also bind expected select-mode behavior</span>
+        </label>
+
+        <div class="inspector-actions">
+          <button id="saveBindBtn" class="primary">Save Binding</button>
+          <button id="saveEnterBtn" class="prefix-btn" style="display:none">Save &amp; Enter Sub-keymap →</button>
+          <button id="resetBindBtn" class="danger" style="display:none">Reset to Default</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <h2 class="card-title" id="listTitle">Bindings in Layer</h2>
+          <span class="count-pill" id="listCount"></span>
+        </div>
+        <input type="text" id="filterInput" placeholder="Filter keys or commands..." style="width:185px;padding:5px 8px;font-size:12px;">
+      </div>
+      <div class="bind-list" id="bindList"></div>
+    </div>
+  </section>
+</main>
+
+<div class="drop-overlay" id="dropOverlay">Drop config.toml to load</div>
+<div class="key-tooltip" id="keyTooltip" role="tooltip"></div>
+<div class="toast" id="toast"></div>
+
+<script src="defaults.js"></script>
+<script src="toml.js"></script>
+<script>
+(() => {
+  const { MITOS_DEFAULTS, COMMON_COMMANDS, COMMAND_LABELS, SUBMAP_LABELS, prettyCommand, describeCommand, mirrorCommandForMode } = window.MitosDefaults;
+  const { parseMitosConfig, serializeMitosConfig, menuPathKey, isPlainObject } = window.MitosToml;
+
+  const SAMPLE_CONFIG = `theme = "modus-vivendi"
+
+[editor]
+line-number = "relative"
+
+[keys.normal]
+C-s = ":write"
+";" = "collapse_selection"
+
+# Custom q + something chord menu
+[keys.normal.q]
+q = ":quit"
+w = ":write"
+x = ":write-quit"
+c = ":buffer-close"
+r = ":config-reload"
+
+[keys.normal.space]
+h = ":toggle soft-wrap.enable"
+`;
+
+  // Authentic US ANSI MacBook / Apple Magic Keyboard layout
+  // Each key: { id (Mitos key name), label, shift (shifted Mitos key & label), u (width units), mod (modifier toggle) }
+  const MAC_ROWS = [
+    {
+      fn: true,
+      keys: [
+        { id: "esc", label: "esc", u: 1.5 },
+        ...Array.from({ length: 12 }, (_, i) => ({ id: `F${i + 1}`, label: `F${i + 1}`, u: 1 })),
+        { id: "_power", label: "⏻", u: 1, disabled: true },
+      ],
+    },
+    {
+      keys: [
+        { id: "`", label: "`", shift: "~", u: 1 },
+        { id: "1", label: "1", shift: "!", u: 1 },
+        { id: "2", label: "2", shift: "@", u: 1 },
+        { id: "3", label: "3", shift: "#", u: 1 },
+        { id: "4", label: "4", shift: "$", u: 1 },
+        { id: "5", label: "5", shift: "%", u: 1 },
+        { id: "6", label: "6", shift: "^", u: 1 },
+        { id: "7", label: "7", shift: "&", u: 1 },
+        { id: "8", label: "8", shift: "*", u: 1 },
+        { id: "9", label: "9", shift: "(", u: 1 },
+        { id: "0", label: "0", shift: ")", u: 1 },
+        { id: "minus", altIds: ["-"], label: "-", shift: "_", u: 1 },
+        { id: "=", altIds: ["equal"], label: "=", shift: "+", u: 1 },
+        { id: "backspace", label: "delete", sub: "⌫", u: 1.8 },
+      ],
+    },
+    {
+      keys: [
+        { id: "tab", label: "tab", sub: "⇥", u: 1.5 },
+        ..."qwertyuiop".split("").map((c) => ({ id: c, label: c.toUpperCase(), shift: c.toUpperCase(), u: 1 })),
+        { id: "[", label: "[", shift: "{", u: 1 },
+        { id: "]", label: "]", shift: "}", u: 1 },
+        { id: "\\", label: "\\", shift: "|", u: 1.3 },
+      ],
+    },
+    {
+      keys: [
+        { id: "_caps", label: "caps lock", sym: "⇪", u: 1.8, disabled: true },
+        ..."asdfghjkl".split("").map((c) => ({ id: c, label: c.toUpperCase(), shift: c.toUpperCase(), u: 1 })),
+        { id: ";", label: ";", shift: ":", u: 1 },
+        { id: "'", label: "'", shift: '"', u: 1 },
+        { id: "ret", label: "return", sub: "⏎", u: 2.0 },
+      ],
+    },
+    {
+      keys: [
+        { id: "_lshift", label: "shift", sym: "⇧", mod: "shift", u: 2.3 },
+        ..."zxcvbnm".split("").map((c) => ({ id: c, label: c.toUpperCase(), shift: c.toUpperCase(), u: 1 })),
+        { id: ",", label: ",", shift: "<", u: 1 },
+        { id: ".", label: ".", shift: ">", u: 1 },
+        { id: "/", label: "/", shift: "?", u: 1 },
+        { id: "_rshift", label: "shift", sym: "⇧", mod: "shift", u: 2.5 },
+      ],
+    },
+    {
+      bottom: true,
+      keys: [
+        { id: "_fn", label: "fn", sym: "🌐", u: 1, disabled: true },
+        { id: "_ctrl", label: "control", sym: "⌃", mod: "ctrl", u: 1.1 },
+        { id: "_lopt", label: "option", sym: "⌥", mod: "alt", u: 1.1 },
+        { id: "_lcmd", label: "command", sym: "⌘", u: 1.35, disabled: true },
+        { id: "space", label: "space", u: 5.2 },
+        { id: "_rcmd", label: "command", sym: "⌘", u: 1.35, disabled: true },
+        { id: "_ropt", label: "option", sym: "⌥", mod: "alt", u: 1.1 },
+      ],
+    },
+  ];
+
+  // App state
+  const state = {
+    keys: {},
+    preservedLines: [],
+    menuGroups: {}, // "mode\0key..." -> shared menu name
+    mode: "normal",
+    prefixPath: [], // e.g. ["q"] for q + something, ["space", "w"] for space + w + ...
+    mods: { shift: false, ctrl: false, alt: false },
+    hideDefaults: false,
+    friendlyNames: true,
+    dirty: false,
+    history: [],
+    future: [],
+    selectedKey: null, // resolved Mitos key name in current layer
+    lastClickKey: null,
+    lastClickAt: 0,
+    filter: "",
+    fileHandle: null,
+    serverConnected: false,
+    fileName: "~/.config/mitos/config.toml",
+  };
+
+  // Populate native <datalist> for Mitos command autocomplete with custom friendly names
+  const datalist = document.getElementById("mitosCommands");
+  const allCommands = [...new Set([...Object.keys(COMMAND_LABELS), ...COMMON_COMMANDS])];
+  const labelToCmd = new Map();
+  allCommands.forEach((cmd) => {
+    const label = prettyCommand(cmd);
+    const opt = document.createElement("option");
+    opt.value = cmd;
+    opt.label = label;
+    opt.textContent = label;
+    datalist.appendChild(opt);
+    const key = label.toLowerCase();
+    if (!labelToCmd.has(key)) labelToCmd.set(key, cmd);
+  });
+
+  function resolveCommandInput(input) {
+    const trimmed = input.trim();
+    return labelToCmd.get(trimmed.toLowerCase()) || trimmed;
+  }
+
+  // Helpers for traversing nested keymap objects
+  function getNode(root, mode, path) {
+    let cur = root && root[mode];
+    for (const seg of path) {
+      if (!isPlainObject(cur)) return null;
+      cur = cur[seg];
+    }
+    return isPlainObject(cur) ? cur : null;
+  }
+
+  // If the user replaced a default sub-keymap with a scalar (or vice versa), defaults inside it don't apply
+  function getDefaultLayer() {
+    let uCur = state.keys[state.mode];
+    let dCur = MITOS_DEFAULTS[state.mode];
+    for (const seg of state.prefixPath) {
+      const uNext = isPlainObject(uCur) ? uCur[seg] : undefined;
+      const dNext = isPlainObject(dCur) ? dCur[seg] : undefined;
+      if (uNext !== undefined && !isPlainObject(uNext)) return null;
+      if (!isPlainObject(dNext)) return null;
+      uCur = uNext;
+      dCur = dNext;
+    }
+    return isPlainObject(dCur) ? dCur : null;
+  }
+
+  function getUserLayer() {
+    return getNode(state.keys, state.mode, state.prefixPath);
+  }
+
+  function ensureUserLayer() {
+    if (!isPlainObject(state.keys[state.mode])) state.keys[state.mode] = {};
+    let cur = state.keys[state.mode];
+    for (const seg of state.prefixPath) {
+      if (!isPlainObject(cur[seg])) cur[seg] = {};
+      cur = cur[seg];
+    }
+    return cur;
+  }
+
+  function pruneEmptyAncestors() {
+    const chain = [];
+    let cur = state.keys[state.mode];
+    if (!isPlainObject(cur)) return;
+    chain.push({ parent: state.keys, key: state.mode, node: cur });
+    for (const seg of state.prefixPath) {
+      if (!isPlainObject(cur[seg])) break;
+      chain.push({ parent: cur, key: seg, node: cur[seg] });
+      cur = cur[seg];
+    }
+    for (let i = chain.length - 1; i >= 0; i--) {
+      if (Object.keys(chain[i].node).length === 0) {
+        delete chain[i].parent[chain[i].key];
+      } else {
+        break;
+      }
+    }
+  }
+
+  // Convert physical Mac key + active modifiers to canonical Mitos key name(s)
+  function resolveKeyCandidates(keyDef) {
+    const { shift, ctrl, alt } = state.mods;
+    const isLetter = keyDef.id.length === 1 && /[a-z]/.test(keyDef.id);
+    const hasShiftedChar = Boolean(keyDef.shift);
+    const ids = [keyDef.id, ...(keyDef.altIds || [])];
+
+    if (!ctrl && !alt) {
+      if (!shift) return ids;
+      return hasShiftedChar ? [keyDef.shift, ...ids.map((id) => `S-${id}`)] : ids.map((id) => `S-${id}`);
+    }
+
+    const prefix = (ctrl ? "C-" : "") + (alt ? "A-" : "");
+    if (!shift) return ids.map((id) => prefix + id);
+
+    // With Shift + Ctrl/Alt: Mitos/Helix uses e.g. A-U or A-S-ret or C-S-w
+    const candidates = [];
+    if (hasShiftedChar && !ctrl && alt) candidates.push(`A-${keyDef.shift}`);
+    if (hasShiftedChar && ctrl && !alt && !isLetter) candidates.push(`C-${keyDef.shift}`);
+    ids.forEach((id) => candidates.push(`${prefix}S-${id}`));
+    if (hasShiftedChar) candidates.push(`${prefix}${keyDef.shift}`);
+    return [...new Set(candidates)];
+  }
+
+  // Shared menu helpers (backed by `# mitos-webui:menu = "<name>"` comments in config.toml)
+  function cloneVal(v) {
+    return JSON.parse(JSON.stringify(v));
+  }
+
+  function getMenuName(mode, pathParts) {
+    return state.menuGroups[menuPathKey([mode, ...pathParts])] || null;
+  }
+
+  function getLinkedPaths(menuName, modeFilter) {
+    if (!menuName) return [];
+    const out = [];
+    for (const [k, name] of Object.entries(state.menuGroups)) {
+      if (name !== menuName) continue;
+      const parts = k.split("\0");
+      if (modeFilter && parts[0] !== modeFilter) continue;
+      out.push({ mode: parts[0], path: parts.slice(1), fullKey: k });
+    }
+    return out;
+  }
+
+  function setPathValue(mode, pathParts, val) {
+    if (!isPlainObject(state.keys[mode])) state.keys[mode] = {};
+    let cur = state.keys[mode];
+    for (let i = 0; i < pathParts.length - 1; i++) {
+      if (!isPlainObject(cur[pathParts[i]])) cur[pathParts[i]] = {};
+      cur = cur[pathParts[i]];
+    }
+    cur[pathParts[pathParts.length - 1]] = val;
+  }
+
+  // Propagate changes from a source menu path to all other keys linked to the same shared menu
+  function syncMenuGroup(menuName, sourceObj) {
+    if (!menuName || !isPlainObject(sourceObj)) return;
+    for (const entry of getLinkedPaths(menuName)) {
+      setPathValue(entry.mode, entry.path, cloneVal(sourceObj));
+    }
+  }
+
+  // If we're currently editing inside a shared menu (or nested inside one), sync the whole shared menu
+  function syncCurrentLayerIfLinked() {
+    for (let depth = state.prefixPath.length; depth >= 1; depth--) {
+      const subPath = state.prefixPath.slice(0, depth);
+      const menuName = getMenuName(state.mode, subPath);
+      if (menuName) {
+        const node = getNode(state.keys, state.mode, subPath) || {};
+        syncMenuGroup(menuName, node);
+      }
+    }
+  }
+
+  function nonInsertModes() {
+    const modes = new Set(["normal", "select"]);
+    Object.keys(state.keys).forEach((m) => {
+      if (m !== "insert" && isPlainObject(state.keys[m])) modes.add(m);
+    });
+    return [...modes];
+  }
+
+  function mirrorValueForMode(val, targetMode) {
+    if (Array.isArray(val)) return val.map((c) => mirrorCommandForMode(c, targetMode));
+    if (typeof val === "string") return mirrorCommandForMode(val, targetMode);
+    return val;
+  }
+
+  function normalizeUserKeyName(raw) {
+    const k = raw.trim();
+    if (k === "-") return "minus";
+    if (k.endsWith("--")) return k.slice(0, -1) + "minus";
+    return k;
+  }
+
+  function lookupKey(keyDef, userLayer, defaultLayer) {
+    const candidates = resolveKeyCandidates(keyDef);
+    let userKey = null, userVal = undefined;
+    let defKey = null, defaultVal = undefined;
+    for (const k of candidates) {
+      if (userKey === null && userLayer && Object.prototype.hasOwnProperty.call(userLayer, k)) {
+        userKey = k;
+        userVal = userLayer[k];
+      }
+      if (defKey === null && defaultLayer && Object.prototype.hasOwnProperty.call(defaultLayer, k)) {
+        defKey = k;
+        defaultVal = defaultLayer[k];
+      }
+    }
+    return {
+      keyName: userKey || defKey || candidates[0],
+      userVal,
+      defaultVal,
+    };
+  }
+
+  function countSubmapEntries(userObj, defObj, hideDefaults) {
+    const keys = new Set();
+    if (isPlainObject(userObj)) Object.keys(userObj).forEach((k) => keys.add(k));
+    if (!hideDefaults && isPlainObject(defObj)) Object.keys(defObj).forEach((k) => keys.add(k));
+    return keys.size;
+  }
+
+  function hasAnyCustomInTree(obj) {
+    if (!isPlainObject(obj)) return obj !== undefined;
+    return Object.keys(obj).length > 0;
+  }
+
+  function formatCmd(cmd) {
+    return state.friendlyNames ? prettyCommand(cmd) : String(cmd);
+  }
+
+  function formatSubmap(keyName, isCustom, menuName) {
+    if (menuName) return `🔗 ${menuName}`;
+    if (!state.friendlyNames) return `${keyName} + ...`;
+    if (!isCustom && SUBMAP_LABELS[keyName]) return SUBMAP_LABELS[keyName];
+    return `${keyName} + …`;
+  }
+
+  function summarizeVal(val, raw) {
+    if (val === undefined) return "";
+    if (isPlainObject(val)) return `+ ${Object.keys(val).length} binds`;
+    const fmt = (c) => (raw || !state.friendlyNames ? String(c) : prettyCommand(c));
+    if (Array.isArray(val)) return val.map(fmt).join(" → ");
+    return fmt(val);
+  }
+
+  function shortLabel(val) {
+    if (Array.isArray(val)) {
+      const first = formatCmd(val[0] || "");
+      return val.length > 1 ? `${first} +${val.length - 1}` : first;
+    }
+    return formatCmd(val);
+  }
+
+  function setDirty(isDirty) {
+    state.dirty = isDirty;
+    updateChrome();
+  }
+
+  // Header state: file badge, save button label, undo/redo availability
+  function updateChrome() {
+    const canWrite = Boolean(state.fileHandle || state.serverConnected);
+    const btn = document.getElementById("saveFileBtn");
+    btn.classList.toggle("dirty", state.dirty && canWrite);
+    btn.textContent = canWrite ? (state.dirty ? "Save •" : "Save") : "Download";
+    btn.title = canWrite ? `Save to ${state.fileName}` : "Download config.toml";
+    const badge = document.getElementById("fileBadge");
+    badge.textContent = state.fileName.split("/").pop() || state.fileName;
+    badge.title = state.fileName + (state.dirty ? " (unsaved changes)" : "");
+    badge.classList.toggle("dirty", state.dirty);
+    document.getElementById("undoBtn").disabled = state.history.length === 0;
+    document.getElementById("redoBtn").disabled = state.future.length === 0;
+  }
+
+  function renderLegendHint() {
+    const el = document.getElementById("legendHint");
+    const active = [["shift", "⇧"], ["ctrl", "⌃"], ["alt", "⌥"]].filter(([m]) => state.mods[m]);
+    el.classList.toggle("mods-on", active.length > 0);
+    if (active.length) {
+      el.innerHTML = `Showing <kbd>${active.map(([, s]) => s).join(" ")}</kbd> layer<button type="button">Clear</button>`;
+      el.querySelector("button").onclick = () => {
+        state.mods = { shift: false, ctrl: false, alt: false };
+        render();
+      };
+    } else {
+      el.innerHTML = "Tip: press any key on your keyboard to select it";
+    }
+  }
+
+  function takeSnapshot() {
+    return JSON.stringify({
+      keys: state.keys,
+      menuGroups: state.menuGroups,
+      preservedLines: state.preservedLines,
+    });
+  }
+
+  function restoreSnapshot(snap) {
+    const data = JSON.parse(snap);
+    state.keys = data.keys;
+    state.menuGroups = data.menuGroups;
+    state.preservedLines = data.preservedLines;
+    // If current prefixPath no longer exists, step back to root
+    if (state.prefixPath.length && !getUserLayer() && !getDefaultLayer()) {
+      state.prefixPath = [];
+      state.selectedKey = null;
+    }
+  }
+
+  function pushHistory() {
+    state.history.push(takeSnapshot());
+    if (state.history.length > 100) state.history.shift();
+    state.future = [];
+  }
+
+  function undo() {
+    if (state.history.length === 0) return;
+    state.future.push(takeSnapshot());
+    restoreSnapshot(state.history.pop());
+    persistToLocalStorage();
+    setDirty(true);
+    render();
+    showToast("Undone (⌘Z)");
+  }
+
+  function redo() {
+    if (state.future.length === 0) return;
+    state.history.push(takeSnapshot());
+    restoreSnapshot(state.future.pop());
+    persistToLocalStorage();
+    setDirty(true);
+    render();
+    showToast("Redone (⇧⌘Z)");
+  }
+
+  // Render everything
+  function render() {
+    renderStats();
+    renderModeTabs();
+    renderBreadcrumbAndSubmaps();
+    renderKeyboard();
+    renderLegendHint();
+    renderInspector();
+    renderBindList();
+    syncRawToml();
+    updateChrome();
+  }
+
+  function countDefaultLeaves(node) {
+    if (!isPlainObject(node)) return 0;
+    let total = 0;
+    for (const v of Object.values(node)) {
+      total += isPlainObject(v) ? countDefaultLeaves(v) : 1;
+    }
+    return total;
+  }
+
+  function renderStats() {
+    const el = document.getElementById("statsStrip");
+    let totalCustom = 0;
+    let totalOverrides = 0;
+    let totalMenus = 0;
+    const perMode = {};
+
+    function walk(uNode, dNode, mode) {
+      if (!isPlainObject(uNode)) return;
+      for (const [k, v] of Object.entries(uNode)) {
+        // Also count S-a as overriding uppercase A in defaults
+        const altKey = /^S-([a-z])$/.test(k) ? k.slice(2).toUpperCase() : null;
+        const hasDef = isPlainObject(dNode) && (
+          Object.prototype.hasOwnProperty.call(dNode, k) ||
+          (altKey && Object.prototype.hasOwnProperty.call(dNode, altKey))
+        );
+        if (isPlainObject(v)) {
+          totalMenus++;
+          if (hasDef && !isPlainObject(dNode[k])) totalOverrides++;
+          walk(v, hasDef && isPlainObject(dNode[k]) ? dNode[k] : null, mode);
+        } else {
+          totalCustom++;
+          perMode[mode] = (perMode[mode] || 0) + 1;
+          if (hasDef) totalOverrides++;
+        }
+      }
+    }
+
+    for (const [mode, node] of Object.entries(state.keys)) {
+      if (isPlainObject(node)) walk(node, MITOS_DEFAULTS[mode], mode);
+    }
+
+    const totalDefaults = Object.values(MITOS_DEFAULTS).reduce((sum, m) => sum + countDefaultLeaves(m), 0);
+    const reboundPct = totalDefaults ? Math.round((totalOverrides / totalDefaults) * 100) : 0;
+
+    const sharedMenus = new Set(Object.values(state.menuGroups)).size;
+    const modeSummary = Object.entries(perMode)
+      .map(([m, c]) => `${m} ${c}`)
+      .join(" · ") || "none yet";
+
+    let theme = null;
+    for (const line of state.preservedLines) {
+      const m = line.match(/^\s*theme\s*=\s*["']([^"']+)["']/);
+      if (m) { theme = m[1]; break; }
+    }
+
+    const cards = [
+      { val: `${reboundPct}%`, cls: "override", label: "Rebound", sub: `${totalOverrides} / ${totalDefaults} defaults` },
+      { val: String(totalCustom), cls: "accent", label: "Custom Binds", sub: modeSummary },
+      { val: String(totalMenus), cls: "prefix", label: "Sub-keymaps", sub: sharedMenus ? `${sharedMenus} shared` : "prefix menus" },
+    ];
+    if (theme) cards.push({ val: theme, cls: "mono", label: "Theme", sub: "config.toml" });
+
+    el.innerHTML = "";
+    cards.forEach((c) => {
+      const card = document.createElement("div");
+      card.className = "stat-card";
+      card.innerHTML = `<div class="stat-val ${c.cls}"></div><div class="stat-label"><span></span><span></span></div>`;
+      card.children[0].textContent = c.val;
+      card.children[1].children[0].textContent = c.label;
+      card.children[1].children[1].textContent = c.sub;
+      el.appendChild(card);
+    });
+  }
+
+  function renderModeTabs() {
+    const modes = ["normal", "select", "insert"];
+    Object.keys(state.keys).forEach((m) => {
+      if (!modes.includes(m) && isPlainObject(state.keys[m])) modes.push(m);
+    });
+    const el = document.getElementById("modeTabs");
+    el.innerHTML = "";
+    modes.forEach((m) => {
+      const btn = document.createElement("button");
+      btn.className = "seg-btn" + (state.mode === m ? " active" : "");
+      btn.textContent = m;
+      btn.onclick = () => {
+        state.mode = m;
+        state.prefixPath = [];
+        state.selectedKey = null;
+        render();
+      };
+      el.appendChild(btn);
+    });
+  }
+
+  function renderBreadcrumbAndSubmaps() {
+    const bc = document.getElementById("breadcrumb");
+    bc.innerHTML = "";
+
+    const rootCrumb = document.createElement("button");
+    rootCrumb.className = "crumb" + (state.prefixPath.length === 0 ? " current" : "");
+    rootCrumb.textContent = state.mode;
+    rootCrumb.onclick = () => {
+      state.prefixPath = [];
+      state.selectedKey = null;
+      render();
+    };
+    bc.appendChild(rootCrumb);
+
+    state.prefixPath.forEach((seg, idx) => {
+      const sep = document.createElement("span");
+      sep.className = "crumb-sep";
+      sep.textContent = "›";
+      bc.appendChild(sep);
+
+      const c = document.createElement("button");
+      c.className = "crumb" + (idx === state.prefixPath.length - 1 ? " current" : "");
+      c.textContent = seg;
+      c.onclick = () => {
+        state.prefixPath = state.prefixPath.slice(0, idx + 1);
+        state.selectedKey = null;
+        render();
+      };
+      bc.appendChild(c);
+    });
+
+    if (state.prefixPath.length > 0) {
+      const back = document.createElement("button");
+      back.style.marginLeft = "6px";
+      back.textContent = "← Up";
+      back.onclick = () => {
+        state.prefixPath.pop();
+        state.selectedKey = null;
+        render();
+      };
+      bc.appendChild(back);
+    }
+
+    // Shared menu sync banner when viewing inside a linked menu
+    const menuBanner = document.getElementById("menuBanner");
+    const menuBannerText = document.getElementById("menuBannerText");
+    const activeMenu = state.prefixPath.length ? getMenuName(state.mode, state.prefixPath) : null;
+    if (activeMenu) {
+      const linked = getLinkedPaths(activeMenu).map((e) =>
+        e.mode === state.mode ? e.path.join(" + ") : `${e.mode}:${e.path.join(" + ")}`
+      );
+      menuBannerText.textContent = `🔗 Shared menu "${activeMenu}" — edits automatically sync across: ${linked.join(", ")}`;
+      menuBanner.classList.add("show");
+    } else {
+      menuBanner.classList.remove("show");
+    }
+
+    // Quick chips for all sub-keymaps in the current layer
+    const chips = document.getElementById("submapChips");
+    chips.innerHTML = "";
+    const userLayer = getUserLayer() || {};
+    const defLayer = getDefaultLayer() || {};
+    const allKeys = new Set([...Object.keys(userLayer), ...Object.keys(defLayer)]);
+    const submaps = [];
+
+    for (const k of allKeys) {
+      const u = userLayer[k];
+      const d = defLayer[k];
+      const eff = u !== undefined ? u : d;
+      if (!isPlainObject(eff)) continue;
+      const isCustom = u !== undefined;
+      if (state.hideDefaults && !isCustom) continue;
+      const count = countSubmapEntries(u, d, state.hideDefaults);
+      submaps.push({ key: k, isCustom, count });
+    }
+
+    if (submaps.length > 0) {
+      const lbl = document.createElement("span");
+      lbl.className = "submap-label";
+      lbl.textContent = "Sub-keymaps:";
+      chips.appendChild(lbl);
+
+      submaps.sort((a, b) => Number(b.isCustom) - Number(a.isCustom) || a.key.localeCompare(b.key));
+      submaps.forEach((s) => {
+        const chip = document.createElement("button");
+        chip.className = "chip" + (s.isCustom ? "" : " is-default-chip");
+        const mName = getMenuName(state.mode, state.prefixPath.concat([s.key]));
+        chip.textContent = mName ? `🔗 ${s.key}: ${mName} (${s.count})` : `${s.key} + (${s.count})`;
+        chip.onclick = () => {
+          state.prefixPath.push(s.key);
+          state.selectedKey = null;
+          render();
+        };
+        chips.appendChild(chip);
+      });
+    }
+  }
+
+  function buildKeyElement(keyDef, userLayer, defaultLayer) {
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "key";
+    if (keyDef.u) el.style.setProperty("--u", keyDef.u);
+
+    // Modifier toggle keys right on the Mac keyboard
+    if (keyDef.mod) {
+      el.classList.add("is-mod-key");
+      if (state.mods[keyDef.mod]) el.classList.add("mod-active");
+      el.innerHTML = `<div class="key-mod-label"><span class="key-mod-sym">${keyDef.sym}</span><span class="key-mod-name">${keyDef.label}</span></div>`;
+      el.onclick = () => {
+        state.mods[keyDef.mod] = !state.mods[keyDef.mod];
+        render();
+      };
+      return el;
+    }
+
+    if (keyDef.disabled) {
+      el.classList.add("is-mod-key", "is-disabled");
+      el.innerHTML = `<div class="key-mod-label"><span class="key-mod-sym">${keyDef.sym || ""}</span><span class="key-mod-name">${keyDef.label}</span></div>`;
+      return el;
+    }
+
+    const { keyName, userVal, defaultVal } = lookupKey(keyDef, userLayer, defaultLayer);
+    const hasUser = userVal !== undefined;
+    const hasDef = defaultVal !== undefined;
+    const visibleVal = hasUser ? userVal : (state.hideDefaults ? undefined : defaultVal);
+    const isPrefix = isPlainObject(visibleVal);
+
+    if (isPrefix) {
+      el.classList.add("is-prefix");
+      if (!hasUser) el.classList.add("is-default");
+    } else if (hasUser && hasDef) {
+      el.classList.add("is-override");
+    } else if (hasUser) {
+      el.classList.add("is-custom");
+    } else if (visibleVal !== undefined) {
+      el.classList.add("is-default");
+    } else {
+      el.classList.add("is-unbound");
+    }
+
+    if (state.selectedKey === keyName) el.classList.add("is-selected");
+
+    const displayLegend = (state.mods.shift && keyDef.shift) ? keyDef.shift : keyDef.label;
+    const top = document.createElement("div");
+    top.className = "key-top";
+
+    const leg = document.createElement("span");
+    leg.className = "key-legend";
+    leg.textContent = displayLegend;
+    top.appendChild(leg);
+
+    if (isPrefix) {
+      const count = countSubmapEntries(userVal, defaultVal, state.hideDefaults);
+      const badge = document.createElement("span");
+      badge.className = "key-badge";
+      badge.textContent = `+${count}`;
+      top.appendChild(badge);
+    } else if (keyDef.sub) {
+      const sub = document.createElement("span");
+      sub.className = "key-sublegend";
+      sub.textContent = keyDef.sub;
+      top.appendChild(sub);
+    }
+
+    const cmd = document.createElement("div");
+    cmd.className = "key-cmd" + (state.friendlyNames ? "" : " raw-mode");
+    const menuName = isPrefix ? getMenuName(state.mode, state.prefixPath.concat([keyName])) : null;
+    if (isPrefix) {
+      cmd.textContent = formatSubmap(keyName, hasUser, menuName);
+    } else if (visibleVal !== undefined) {
+      cmd.textContent = shortLabel(visibleVal);
+    }
+
+    el.appendChild(top);
+    el.appendChild(cmd);
+
+    el.addEventListener("mouseenter", () => showKeyTooltip(el, {
+      keyName, userVal, defaultVal, visibleVal, hasUser, hasDef, isPrefix, menuName,
+    }));
+    el.addEventListener("mouseleave", hideKeyTooltip);
+
+    el.onclick = (e) => {
+      const now = Date.now();
+      const isDouble = isPrefix && (
+        e.detail >= 2 || (state.lastClickKey === keyName && now - state.lastClickAt < 450)
+      );
+      hideKeyTooltip();
+      if (isDouble) {
+        state.prefixPath.push(keyName);
+        state.selectedKey = null;
+        state.lastClickKey = null;
+        state.lastClickAt = 0;
+      } else {
+        state.selectedKey = keyName;
+        state.lastClickKey = keyName;
+        state.lastClickAt = now;
+      }
+      render();
+    };
+
+    return el;
+  }
+
+  const tooltipEl = document.getElementById("keyTooltip");
+
+  function showKeyTooltip(anchorEl, info) {
+    const { keyName, userVal, defaultVal, visibleVal, hasUser, hasDef, isPrefix, menuName } = info;
+    const chord = state.prefixPath.length
+      ? `${state.mode} › ${state.prefixPath.join(" + ")} + ${keyName}`
+      : `${state.mode} › ${keyName}`;
+
+    let statusText = "Unbound", statusCls = "tag-unbound";
+    if (isPrefix) {
+      statusText = menuName ? `Shared: ${menuName}` : (hasUser ? "Custom Menu" : "Default Menu");
+      statusCls = "tag-prefix";
+    } else if (hasUser && hasDef) {
+      statusText = "Override";
+      statusCls = "tag-override";
+    } else if (hasUser) {
+      statusText = "Custom";
+      statusCls = "tag-custom";
+    } else if (visibleVal !== undefined) {
+      statusText = "Default";
+      statusCls = "tag-default";
+    }
+
+    tooltipEl.innerHTML = "";
+    const head = document.createElement("div");
+    head.className = "tt-head";
+    const chordSpan = document.createElement("span");
+    chordSpan.className = "tt-chord";
+    chordSpan.textContent = chord;
+    const tagSpan = document.createElement("span");
+    tagSpan.className = "status-tag " + statusCls;
+    tagSpan.textContent = statusText;
+    head.appendChild(chordSpan);
+    head.appendChild(tagSpan);
+    tooltipEl.appendChild(head);
+
+    if (visibleVal === undefined) {
+      const desc = document.createElement("div");
+      desc.className = "tt-desc";
+      desc.textContent = hasDef && state.hideDefaults
+        ? "Default binding hidden. Click to add a custom binding."
+        : "Not bound. Click to assign a command or prefix menu.";
+      tooltipEl.appendChild(desc);
+    } else if (isPrefix) {
+      const title = document.createElement("div");
+      title.className = "tt-title";
+      title.textContent = menuName
+        ? `Shared Menu "${menuName}"`
+        : `${SUBMAP_LABELS[keyName] || keyName} Sub-keymap`;
+      tooltipEl.appendChild(title);
+
+      const merged = Object.assign(
+        {},
+        (!state.hideDefaults && isPlainObject(defaultVal)) ? defaultVal : {},
+        isPlainObject(userVal) ? userVal : {}
+      );
+      const entries = Object.entries(merged);
+      const sub = document.createElement("div");
+      sub.className = "tt-sub";
+      entries.slice(0, 6).forEach(([ck, cv]) => {
+        const r = document.createElement("div");
+        r.className = "tt-preview-row";
+        const kEl = document.createElement("span");
+        kEl.textContent = `${keyName} + ${ck}`;
+        const vEl = document.createElement("span");
+        vEl.textContent = isPlainObject(cv) ? "+ menu" : summarizeVal(cv, false);
+        r.appendChild(kEl);
+        r.appendChild(vEl);
+        sub.appendChild(r);
+      });
+      if (entries.length > 6) {
+        const more = document.createElement("div");
+        more.textContent = `+ ${entries.length - 6} more — double-click to open`;
+        sub.appendChild(more);
+      } else {
+        const hint = document.createElement("div");
+        hint.textContent = "Double-click to open this menu";
+        sub.appendChild(hint);
+      }
+      tooltipEl.appendChild(sub);
+    } else if (Array.isArray(visibleVal)) {
+      const title = document.createElement("div");
+      title.className = "tt-title";
+      title.textContent = `Sequence (${visibleVal.length} steps)`;
+      tooltipEl.appendChild(title);
+      const raw = document.createElement("div");
+      raw.className = "tt-raw";
+      raw.textContent = visibleVal.join(" → ");
+      tooltipEl.appendChild(raw);
+      const desc = document.createElement("div");
+      desc.className = "tt-desc";
+      desc.textContent = visibleVal.map((c) => prettyCommand(c)).join(" → ");
+      tooltipEl.appendChild(desc);
+    } else {
+      const title = document.createElement("div");
+      title.className = "tt-title";
+      title.textContent = prettyCommand(visibleVal);
+      tooltipEl.appendChild(title);
+      const raw = document.createElement("div");
+      raw.className = "tt-raw";
+      raw.textContent = String(visibleVal);
+      tooltipEl.appendChild(raw);
+      const desc = document.createElement("div");
+      desc.className = "tt-desc";
+      desc.textContent = describeCommand(String(visibleVal));
+      tooltipEl.appendChild(desc);
+    }
+
+    if (hasUser && hasDef && !isPrefix) {
+      const sub = document.createElement("div");
+      sub.className = "tt-sub";
+      sub.textContent = `Replaces default: ${summarizeVal(defaultVal, false)} (${summarizeVal(defaultVal, true)})`;
+      tooltipEl.appendChild(sub);
+    }
+
+    tooltipEl.classList.add("show");
+    const rect = anchorEl.getBoundingClientRect();
+    const ttRect = tooltipEl.getBoundingClientRect();
+    let left = rect.left + rect.width / 2 - ttRect.width / 2;
+    left = Math.max(12, Math.min(window.innerWidth - ttRect.width - 12, left));
+    let top = rect.top - ttRect.height - 10;
+    if (top < 12) top = rect.bottom + 10;
+    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.top = `${top}px`;
+  }
+
+  function hideKeyTooltip() {
+    tooltipEl.classList.remove("show");
+  }
+
+  function renderKeyboard() {
+    const kb = document.getElementById("keyboard");
+    kb.innerHTML = "";
+    const userLayer = getUserLayer();
+    const defaultLayer = getDefaultLayer();
+
+    MAC_ROWS.forEach((rowDef) => {
+      const row = document.createElement("div");
+      row.className = "kb-row" + (rowDef.fn ? " fn-row" : "");
+
+      rowDef.keys.forEach((k) => {
+        row.appendChild(buildKeyElement(k, userLayer, defaultLayer));
+      });
+
+      // Inverted-T Mac arrow cluster on the bottom row
+      if (rowDef.bottom) {
+        const cluster = document.createElement("div");
+        cluster.className = "arrow-cluster";
+
+        const leftCol = document.createElement("div");
+        leftCol.className = "arrow-col half-bottom";
+        leftCol.appendChild(buildKeyElement({ id: "left", label: "◀" }, userLayer, defaultLayer));
+
+        const midCol = document.createElement("div");
+        midCol.className = "arrow-col";
+        midCol.appendChild(buildKeyElement({ id: "up", label: "▲" }, userLayer, defaultLayer));
+        midCol.appendChild(buildKeyElement({ id: "down", label: "▼" }, userLayer, defaultLayer));
+
+        const rightCol = document.createElement("div");
+        rightCol.className = "arrow-col half-bottom";
+        rightCol.appendChild(buildKeyElement({ id: "right", label: "▶" }, userLayer, defaultLayer));
+
+        cluster.appendChild(leftCol);
+        cluster.appendChild(midCol);
+        cluster.appendChild(rightCol);
+        row.appendChild(cluster);
+      }
+
+      kb.appendChild(row);
+    });
+  }
+
+  function renderInspector() {
+    const chordEl = document.getElementById("inspectorChord");
+    const tagEl = document.getElementById("inspectorTag");
+    const emptyEl = document.getElementById("inspectorEmpty");
+    const formEl = document.getElementById("inspectorForm");
+    const enterBtn = document.getElementById("enterPrefixBtn");
+    const defaultHint = document.getElementById("defaultHint");
+    const resetBtn = document.getElementById("resetBindBtn");
+
+    if (!state.selectedKey) {
+      chordEl.textContent = "Select a key";
+      tagEl.textContent = "None";
+      tagEl.className = "status-tag tag-unbound";
+      tagEl.style.display = "none";
+      emptyEl.style.display = "flex";
+      formEl.style.display = "none";
+      enterBtn.style.display = "none";
+      return;
+    }
+    tagEl.style.display = "";
+
+    const k = state.selectedKey;
+    const userLayer = getUserLayer();
+    const defaultLayer = getDefaultLayer();
+    const userVal = userLayer && Object.prototype.hasOwnProperty.call(userLayer, k) ? userLayer[k] : undefined;
+    const defaultVal = defaultLayer && Object.prototype.hasOwnProperty.call(defaultLayer, k) ? defaultLayer[k] : undefined;
+    const hasUser = userVal !== undefined;
+    const hasDef = defaultVal !== undefined;
+    const effVal = hasUser ? userVal : defaultVal;
+
+    const fullChord = state.prefixPath.length
+      ? `${state.mode} › ${state.prefixPath.join(" + ")} + ${k}`
+      : `${state.mode} › ${k}`;
+    chordEl.textContent = fullChord;
+
+    if (isPlainObject(effVal)) {
+      tagEl.textContent = hasUser ? "Custom Sub-keymap" : "Default Sub-keymap";
+      tagEl.className = "status-tag tag-prefix";
+      enterBtn.style.display = "inline-flex";
+      enterBtn.textContent = `Enter ${k} + ... →`;
+    } else if (hasUser && hasDef) {
+      tagEl.textContent = "Overrides Default";
+      tagEl.className = "status-tag tag-override";
+      enterBtn.style.display = "none";
+    } else if (hasUser) {
+      tagEl.textContent = "Custom";
+      tagEl.className = "status-tag tag-custom";
+      enterBtn.style.display = "none";
+    } else if (hasDef) {
+      tagEl.textContent = "Default";
+      tagEl.className = "status-tag tag-default";
+      enterBtn.style.display = "none";
+    } else {
+      tagEl.textContent = "Unbound";
+      tagEl.className = "status-tag tag-unbound";
+      enterBtn.style.display = "none";
+    }
+
+    if (hasDef) {
+      defaultHint.style.display = "block";
+      const defFriendly = summarizeVal(defaultVal, false);
+      const defRaw = summarizeVal(defaultVal, true);
+      defaultHint.textContent = defFriendly !== defRaw
+        ? `Mitos default: ${defFriendly}  (${defRaw})`
+        : `Mitos default: ${defRaw}`;
+    } else {
+      defaultHint.style.display = "none";
+    }
+
+    resetBtn.style.display = hasUser ? "inline-flex" : "none";
+    resetBtn.textContent = hasDef ? "Reset to Default" : "Remove Binding";
+
+    emptyEl.style.display = "none";
+    formEl.style.display = "flex";
+
+    // Populate form fields from effective value
+    const typeSel = document.getElementById("bindType");
+    const cmdInput = document.getElementById("cmdInput");
+    const seqInput = document.getElementById("seqInput");
+    const menuNameInput = document.getElementById("menuNameInput");
+    const curMenuName = getMenuName(state.mode, state.prefixPath.concat([k]));
+
+    // Refresh shared menu name datalist
+    const menuDatalist = document.getElementById("sharedMenuNames");
+    menuDatalist.innerHTML = "";
+    [...new Set(Object.values(state.menuGroups))].sort().forEach((name) => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      menuDatalist.appendChild(opt);
+    });
+
+    menuNameInput.value = curMenuName || "";
+    renderLinkedKeysUI(curMenuName);
+
+    if (isPlainObject(effVal)) {
+      typeSel.value = "prefix";
+      cmdInput.value = "";
+      seqInput.value = "";
+    } else if (Array.isArray(effVal)) {
+      typeSel.value = "sequence";
+      seqInput.value = effVal.join("\n");
+      cmdInput.value = "";
+    } else if (effVal === "no_op") {
+      typeSel.value = "noop";
+      cmdInput.value = "";
+      seqInput.value = "";
+    } else {
+      typeSel.value = "command";
+      cmdInput.value = effVal !== undefined ? String(effVal) : "";
+      seqInput.value = "";
+    }
+    updateBindTypeUI();
+  }
+
+  function renderLinkedKeysUI(menuName) {
+    const wrap = document.getElementById("linkedKeysWrap");
+    const list = document.getElementById("linkedKeysList");
+    if (!menuName) {
+      wrap.style.display = "none";
+      return;
+    }
+    wrap.style.display = "block";
+    list.innerHTML = "";
+    const linked = getLinkedPaths(menuName);
+    linked.forEach((entry) => {
+      const pill = document.createElement("span");
+      pill.className = "linked-pill";
+      const label = entry.mode === state.mode
+        ? entry.path.join(" + ")
+        : `${entry.mode}:${entry.path.join(" + ")}`;
+      pill.textContent = label;
+      if (linked.length > 1) {
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.textContent = "×";
+        rm.title = `Unlink ${label} from "${menuName}"`;
+        rm.onclick = () => {
+          pushHistory();
+          delete state.menuGroups[entry.fullKey];
+          persistToLocalStorage();
+          setDirty(true);
+          render();
+          showToast(`Unlinked ${label}`);
+        };
+        pill.appendChild(rm);
+      }
+      list.appendChild(pill);
+    });
+  }
+
+  function updateBindTypeUI() {
+    const t = document.getElementById("bindType").value;
+    document.getElementById("cmdField").style.display = t === "command" ? "flex" : "none";
+    document.getElementById("seqField").style.display = t === "sequence" ? "flex" : "none";
+    document.getElementById("prefixInfo").style.display = t === "prefix" ? "flex" : "none";
+    document.getElementById("saveEnterBtn").style.display = t === "prefix" ? "inline-flex" : "none";
+    updateMirrorModeUI();
+  }
+
+  function updateMirrorModeUI() {
+    const wrap = document.getElementById("mirrorModeWrap");
+    const lbl = document.getElementById("mirrorModeLabel");
+    const t = document.getElementById("bindType").value;
+    const cmdDescEl = document.getElementById("cmdDescHint");
+    if (t === "command") {
+      const raw = resolveCommandInput(document.getElementById("cmdInput").value);
+      cmdDescEl.textContent = raw ? `${prettyCommand(raw)} — ${describeCommand(raw)}` : "";
+    } else {
+      cmdDescEl.textContent = "";
+    }
+    const canMirror = (state.mode === "normal" || state.mode === "select") && t !== "prefix";
+    if (!canMirror) {
+      wrap.style.display = "none";
+      return;
+    }
+    const targetMode = state.mode === "normal" ? "select" : "normal";
+    wrap.style.display = "inline-flex";
+    if (t === "command") {
+      const raw = resolveCommandInput(document.getElementById("cmdInput").value);
+      if (raw) {
+        const mirrored = mirrorCommandForMode(raw, targetMode);
+        lbl.textContent = `Also bind in ${targetMode}: ${formatCmd(mirrored)} (${mirrored})`;
+      } else {
+        lbl.textContent = `Also bind expected ${targetMode}-mode behavior (move → extend)`;
+      }
+    } else if (t === "sequence") {
+      lbl.textContent = `Also mirror command sequence to ${targetMode} mode`;
+    } else {
+      lbl.textContent = `Also unbind (no_op) in ${targetMode} mode`;
+    }
+  }
+
+  function saveSelectedBinding(andEnterPrefix) {
+    if (!state.selectedKey) return;
+    const k = state.selectedKey;
+    const t = document.getElementById("bindType").value;
+    const layer = ensureUserLayer();
+    const thisPath = state.prefixPath.concat([k]);
+    const thisPathKey = menuPathKey([state.mode, ...thisPath]);
+    const shouldMirror = document.getElementById("mirrorModeToggle").checked
+      && (state.mode === "normal" || state.mode === "select")
+      && t !== "prefix";
+    const mirrorTarget = state.mode === "normal" ? "select" : "normal";
+    const beforeSnap = takeSnapshot();
+
+    if (t === "command") {
+      const val = resolveCommandInput(document.getElementById("cmdInput").value);
+      if (!val) {
+        showToast("Enter a command or choose Unbind (no_op)");
+        return;
+      }
+      layer[k] = val;
+      delete state.menuGroups[thisPathKey];
+      if (shouldMirror) setPathValue(mirrorTarget, thisPath, mirrorValueForMode(val, mirrorTarget));
+    } else if (t === "sequence") {
+      const lines = document.getElementById("seqInput").value
+        .split("\n")
+        .map((s) => resolveCommandInput(s))
+        .filter(Boolean);
+      if (lines.length === 0) {
+        showToast("Enter at least one command");
+        return;
+      }
+      layer[k] = lines;
+      delete state.menuGroups[thisPathKey];
+      if (shouldMirror) setPathValue(mirrorTarget, thisPath, mirrorValueForMode(lines, mirrorTarget));
+    } else if (t === "prefix") {
+      const linkAll = document.getElementById("linkAllNonInsert").checked;
+      let desiredMenu = document.getElementById("menuNameInput").value.trim();
+      if (linkAll && !desiredMenu) desiredMenu = k;
+      if (desiredMenu) {
+        const existingPeers = getLinkedPaths(desiredMenu).filter((e) => e.fullKey !== thisPathKey);
+        if (existingPeers.length > 0 && (!isPlainObject(layer[k]) || Object.keys(layer[k]).length === 0)) {
+          // Copy bindings from existing shared menu into this newly linked key
+          const peerNode = getNode(state.keys, existingPeers[0].mode, existingPeers[0].path) || {};
+          layer[k] = cloneVal(peerNode);
+        } else if (!isPlainObject(layer[k])) {
+          layer[k] = {};
+        }
+        state.menuGroups[thisPathKey] = desiredMenu;
+        if (linkAll) {
+          for (const m of nonInsertModes()) {
+            state.menuGroups[menuPathKey([m, ...thisPath])] = desiredMenu;
+          }
+        }
+        syncMenuGroup(desiredMenu, layer[k]);
+      } else {
+        if (!isPlainObject(layer[k])) layer[k] = {};
+        delete state.menuGroups[thisPathKey];
+      }
+    } else if (t === "noop") {
+      layer[k] = "no_op";
+      delete state.menuGroups[thisPathKey];
+      if (shouldMirror) setPathValue(mirrorTarget, thisPath, "no_op");
+    }
+
+    syncCurrentLayerIfLinked();
+    if (takeSnapshot() !== beforeSnap) {
+      state.history.push(beforeSnap);
+      if (state.history.length > 100) state.history.shift();
+      state.future = [];
+    }
+    persistToLocalStorage();
+    setDirty(true);
+    if (andEnterPrefix && t === "prefix") {
+      state.prefixPath.push(k);
+      state.selectedKey = null;
+    }
+    render();
+    showToast(shouldMirror ? `Saved ${k} (normal + select)` : `Saved ${k}`);
+  }
+
+  function renderBindList() {
+    const list = document.getElementById("bindList");
+    const title = document.getElementById("listTitle");
+    const countEl = document.getElementById("listCount");
+    const pathLabel = state.prefixPath.length
+      ? `${state.mode}.${state.prefixPath.join(".")}`
+      : state.mode;
+    title.textContent = `[${pathLabel}]`;
+    list.innerHTML = "";
+
+    const userLayer = getUserLayer() || {};
+    const defLayer = getDefaultLayer() || {};
+    const allKeys = new Set([...Object.keys(userLayer), ...Object.keys(defLayer)]);
+    const q = state.filter.trim().toLowerCase();
+
+    let customCount = 0;
+    let defaultCount = 0;
+    const rows = [];
+    for (const k of allKeys) {
+      const hasUser = Object.prototype.hasOwnProperty.call(userLayer, k);
+      const hasDef = Object.prototype.hasOwnProperty.call(defLayer, k);
+      if (hasUser) customCount++;
+      else if (hasDef) defaultCount++;
+      if (state.hideDefaults && !hasUser) continue;
+      const val = hasUser ? userLayer[k] : defLayer[k];
+      const isPrefix = isPlainObject(val);
+      const menuName = isPrefix ? getMenuName(state.mode, state.prefixPath.concat([k])) : null;
+      const summary = isPrefix
+        ? `${formatSubmap(k, hasUser, menuName)} (${countSubmapEntries(userLayer[k], defLayer[k], state.hideDefaults)})`
+        : summarizeVal(val, false);
+      const rawSummary = summarizeVal(val, true);
+      if (q && !k.toLowerCase().includes(q) && !summary.toLowerCase().includes(q) && !rawSummary.toLowerCase().includes(q)) continue;
+      rows.push({ key: k, val, summary, rawSummary, hasUser, hasDef, isPrefix });
+    }
+
+    countEl.textContent = state.hideDefaults
+      ? `${customCount} custom`
+      : `${customCount} custom · ${defaultCount} default`;
+
+    rows.sort((a, b) => Number(b.hasUser) - Number(a.hasUser) || a.key.localeCompare(b.key));
+
+    if (rows.length === 0) {
+      list.innerHTML = `<div style="color:var(--muted);padding:12px 4px;font-size:12.5px;">No bindings to show${state.hideDefaults ? " (defaults hidden)" : ""}.</div>`;
+      return;
+    }
+
+    rows.forEach((r) => {
+      const row = document.createElement("div");
+      row.className = "bind-row"
+        + (r.isPrefix ? " is-prefix" : r.hasUser && r.hasDef ? " is-override" : r.hasUser ? " is-custom" : "")
+        + (state.selectedKey === r.key ? " selected" : "");
+      const keySpan = document.createElement("span");
+      keySpan.className = "bind-key";
+      keySpan.textContent = r.key;
+
+      const valSpan = document.createElement("span");
+      valSpan.className = "bind-val";
+      valSpan.textContent = r.summary;
+      if (state.friendlyNames && r.summary !== r.rawSummary && !r.isPrefix) {
+        const sub = document.createElement("span");
+        sub.className = "bind-sub";
+        sub.textContent = r.rawSummary;
+        valSpan.appendChild(sub);
+      }
+
+      row.appendChild(keySpan);
+      row.appendChild(valSpan);
+      row.onclick = (e) => {
+        const now = Date.now();
+        const isDouble = r.isPrefix && (
+          e.detail >= 2 || (state.lastClickKey === r.key && now - state.lastClickAt < 450)
+        );
+        if (isDouble) {
+          state.prefixPath.push(r.key);
+          state.selectedKey = null;
+          state.lastClickKey = null;
+          state.lastClickAt = 0;
+        } else {
+          state.selectedKey = r.key;
+          state.lastClickKey = r.key;
+          state.lastClickAt = now;
+        }
+        render();
+      };
+      list.appendChild(row);
+    });
+  }
+
+  function currentTomlText() {
+    return serializeMitosConfig(state.keys, state.preservedLines, state.menuGroups);
+  }
+
+  function syncRawToml() {
+    const raw = document.getElementById("rawToml");
+    if (document.activeElement !== raw) {
+      raw.value = currentTomlText();
+    }
+  }
+
+  function loadTomlText(text, label) {
+    const errEl = document.getElementById("parseError");
+    try {
+      const parsed = parseMitosConfig(text);
+      state.keys = parsed.keys;
+      state.preservedLines = parsed.preservedLines;
+      state.menuGroups = parsed.menuGroups || {};
+      state.prefixPath = [];
+      state.selectedKey = null;
+      if (label) {
+        state.fileName = label;
+      }
+      errEl.style.display = "none";
+      persistToLocalStorage();
+      render();
+      return true;
+    } catch (err) {
+      errEl.textContent = "TOML parse error: " + err.message;
+      errEl.style.display = "block";
+      return false;
+    }
+  }
+
+  function persistToLocalStorage() {
+    try {
+      localStorage.setItem("mitos_config_toml", currentTomlText());
+    } catch (_) {}
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
+  }
+
+  // Event bindings
+  document.getElementById("statsToggleBtn").addEventListener("click", (e) => {
+    const panel = document.getElementById("statsPanel");
+    const open = panel.classList.toggle("open");
+    e.currentTarget.classList.toggle("active", open);
+  });
+
+  document.getElementById("friendlyNamesToggle").addEventListener("change", (e) => {
+    state.friendlyNames = e.target.checked;
+    render();
+  });
+
+  document.getElementById("hideDefaultsToggle").addEventListener("change", (e) => {
+    state.hideDefaults = e.target.checked;
+    render();
+  });
+
+  // Map physical key codes (layout-independent) to keyboard key ids
+  const CODE_TO_ID = {
+    Backquote: "`", Minus: "minus", Equal: "=", Backspace: "backspace",
+    BracketLeft: "[", BracketRight: "]", Backslash: "\\", Semicolon: ";", Quote: "'",
+    Enter: "ret", Comma: ",", Period: ".", Slash: "/", Space: "space",
+    ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down",
+  };
+  const KEYDEFS_BY_ID = new Map();
+  MAC_ROWS.forEach((r) => r.keys.forEach((k) => { if (!k.mod && !k.disabled) KEYDEFS_BY_ID.set(k.id, k); }));
+  ["left", "right", "up", "down"].forEach((id) => KEYDEFS_BY_ID.set(id, { id, label: id }));
+
+  function codeToKeyId(code) {
+    if (/^Key[A-Z]$/.test(code)) return code.slice(3).toLowerCase();
+    if (/^Digit\d$/.test(code)) return code.slice(5);
+    if (/^F([1-9]|1[0-2])$/.test(code)) return code;
+    return CODE_TO_ID[code] || null;
+  }
+
+  // Press a real key to select it on the virtual keyboard; press a sub-keymap key twice to enter it
+  function selectFromPhysicalKey(e) {
+    const def = KEYDEFS_BY_ID.get(codeToKeyId(e.code));
+    if (!def) return false;
+    const focused = document.activeElement;
+    if ((def.id === "space" || def.id === "ret") && focused && focused.matches("button:not(.key), summary")) return false;
+    e.preventDefault();
+    if (e.repeat) return true;
+    state.mods = { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey };
+    const { keyName, userVal, defaultVal } = lookupKey(def, getUserLayer(), getDefaultLayer());
+    const eff = userVal !== undefined ? userVal : (state.hideDefaults ? undefined : defaultVal);
+    if (state.selectedKey === keyName && isPlainObject(eff)) {
+      state.prefixPath.push(keyName);
+      state.selectedKey = null;
+    } else {
+      state.selectedKey = keyName;
+    }
+    render();
+    const sel = document.querySelector(".key.is-selected");
+    if (sel) sel.classList.add("pulse");
+    return true;
+  }
+
+  // Global shortcuts: ⌘Z undo, ⇧⌘Z redo, Escape steps up / clears modifiers
+  window.addEventListener("keydown", (e) => {
+    const tag = document.activeElement && document.activeElement.tagName;
+    const inField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z" && !inField) {
+      e.preventDefault();
+      if (e.shiftKey) redo();
+      else undo();
+      return;
+    }
+
+    if (inField) return;
+    if (e.key !== "Escape") {
+      if (!e.metaKey) selectFromPhysicalKey(e);
+      return;
+    }
+    if (state.prefixPath.length > 0) {
+      state.prefixPath.pop();
+      state.selectedKey = null;
+      render();
+    } else if (state.mods.shift || state.mods.ctrl || state.mods.alt) {
+      state.mods = { shift: false, ctrl: false, alt: false };
+      render();
+    }
+  });
+
+  // Warn before closing or refreshing the tab with unsaved changes
+  window.addEventListener("beforeunload", (e) => {
+    if (!state.dirty) return;
+    e.preventDefault();
+    e.returnValue = "";
+  });
+
+  document.getElementById("bindType").addEventListener("change", updateBindTypeUI);
+  document.getElementById("cmdInput").addEventListener("input", updateMirrorModeUI);
+  document.getElementById("saveBindBtn").addEventListener("click", () => saveSelectedBinding(false));
+  document.getElementById("saveEnterBtn").addEventListener("click", () => saveSelectedBinding(true));
+  document.getElementById("cmdInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); saveSelectedBinding(false); }
+  });
+
+  document.getElementById("enterPrefixBtn").addEventListener("click", () => {
+    if (!state.selectedKey) return;
+    state.prefixPath.push(state.selectedKey);
+    state.selectedKey = null;
+    render();
+  });
+
+  document.getElementById("resetBindBtn").addEventListener("click", () => {
+    if (!state.selectedKey) return;
+    const layer = getUserLayer();
+    if (layer) {
+      pushHistory();
+      const removedKey = menuPathKey([state.mode, ...state.prefixPath, state.selectedKey]);
+      delete layer[state.selectedKey];
+      delete state.menuGroups[removedKey];
+      syncCurrentLayerIfLinked();
+      pruneEmptyAncestors();
+      persistToLocalStorage();
+      setDirty(true);
+      render();
+      showToast("Reset binding");
+    }
+  });
+
+  document.getElementById("addLinkedKeyBtn").addEventListener("click", () => {
+    if (!state.selectedKey) return;
+    const input = document.getElementById("addLinkedKeyInput");
+    const newKey = normalizeUserKeyName(input.value);
+    if (!newKey) return;
+    const menuName = document.getElementById("menuNameInput").value.trim()
+      || getMenuName(state.mode, state.prefixPath.concat([state.selectedKey]));
+    if (!menuName) {
+      showToast("Enter a Shared Menu Name first");
+      return;
+    }
+    pushHistory();
+    const layer = ensureUserLayer();
+    const srcObj = isPlainObject(layer[state.selectedKey]) ? layer[state.selectedKey] : {};
+    layer[state.selectedKey] = srcObj;
+    const linkAll = document.getElementById("linkAllNonInsert").checked;
+    const targetModes = linkAll ? nonInsertModes() : [state.mode];
+    for (const m of targetModes) {
+      state.menuGroups[menuPathKey([m, ...state.prefixPath, state.selectedKey])] = menuName;
+      state.menuGroups[menuPathKey([m, ...state.prefixPath, newKey])] = menuName;
+    }
+    syncMenuGroup(menuName, srcObj);
+    input.value = "";
+    persistToLocalStorage();
+    setDirty(true);
+    render();
+    showToast(`Linked "${newKey}" to "${menuName}"${linkAll ? " (all non-insert modes)" : ""}`);
+  });
+
+  document.getElementById("addLinkedKeyInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); document.getElementById("addLinkedKeyBtn").click(); }
+  });
+
+  document.getElementById("filterInput").addEventListener("input", (e) => {
+    state.filter = e.target.value;
+    renderBindList();
+  });
+
+  // Raw TOML drawer
+  document.getElementById("rawToggleBtn").addEventListener("click", (e) => {
+    const panel = document.getElementById("tomlPanel");
+    const open = panel.classList.toggle("open");
+    e.currentTarget.classList.toggle("active", open);
+    if (open) syncRawToml();
+  });
+
+  document.getElementById("applyRawBtn").addEventListener("click", () => {
+    const beforeSnap = takeSnapshot();
+    const txt = document.getElementById("rawToml").value;
+    if (loadTomlText(txt)) {
+      if (takeSnapshot() !== beforeSnap) {
+        state.history.push(beforeSnap);
+        state.future = [];
+        setDirty(true);
+      }
+      showToast("Applied TOML config");
+    }
+  });
+
+  document.getElementById("clearCustomBtn").addEventListener("click", () => {
+    pushHistory();
+    state.keys = {};
+    state.menuGroups = {};
+    state.prefixPath = [];
+    state.selectedKey = null;
+    persistToLocalStorage();
+    setDirty(true);
+    render();
+    showToast("Cleared all custom keybindings");
+  });
+
+  document.getElementById("sampleBtn").addEventListener("click", () => {
+    loadTomlText(SAMPLE_CONFIG, "sample config.toml");
+    showToast("Loaded sample config (try double-clicking Q!)");
+  });
+
+  // File Open (File System Access API with <input type="file"> fallback)
+  document.getElementById("openBtn").addEventListener("click", async () => {
+    if (window.showOpenFilePicker) {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{ description: "Mitos TOML Config", accept: { "text/plain": [".toml"] } }],
+        });
+        const file = await handle.getFile();
+        state.fileHandle = handle;
+        loadTomlText(await file.text(), file.name);
+        showToast("Loaded " + file.name);
+        return;
+      } catch (err) {
+        if (err.name === "AbortError") return;
+      }
+    }
+    document.getElementById("fileInput").click();
+  });
+
+  document.getElementById("fileInput").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    state.fileHandle = null;
+    loadTomlText(await file.text(), file.name);
+    showToast("Loaded " + file.name);
+    e.target.value = "";
+  });
+
+  document.getElementById("saveFileBtn").addEventListener("click", async () => {
+    if (state.fileHandle) {
+      try {
+        const writable = await state.fileHandle.createWritable();
+        await writable.write(currentTomlText());
+        await writable.close();
+        setDirty(false);
+        showToast("Saved to " + state.fileName);
+      } catch (err) {
+        showToast("Save failed: " + err.message);
+      }
+      return;
+    }
+    if (state.serverConnected) {
+      try {
+        const res = await fetch("/api/config", { method: "PUT", body: currentTomlText() });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || res.statusText);
+        setDirty(false);
+        showToast("Saved to " + state.fileName);
+      } catch (err) {
+        showToast("Save failed: " + err.message);
+      }
+      return;
+    }
+    downloadToml();
+  });
+
+  async function loadFromServer(silent) {
+    try {
+      const res = await fetch("/api/config");
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (data.error) {
+        if (!silent) showToast("Load error: " + data.error);
+        return false;
+      }
+      state.serverConnected = true;
+      state.fileHandle = null;
+      document.getElementById("reloadBtn").style.display = "inline-flex";
+      loadTomlText(data.text || "", data.path || "~/.config/mitos/config.toml");
+      state.history = [];
+      state.future = [];
+      setDirty(false);
+      if (!silent) showToast(data.exists ? "Loaded " + data.path : "No config yet — saving will create it");
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  document.getElementById("reloadBtn").addEventListener("click", () => {
+    if (state.dirty && !confirm("You have unsaved changes. Reload from disk and discard them?")) return;
+    loadFromServer(false);
+  });
+
+  function downloadToml() {
+    const blob = new Blob([currentTomlText()], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "config.toml";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast("Downloaded config.toml");
+  }
+  document.getElementById("downloadBtn").addEventListener("click", downloadToml);
+  document.getElementById("undoBtn").addEventListener("click", undo);
+  document.getElementById("redoBtn").addEventListener("click", redo);
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(currentTomlText());
+      showToast("Copied config.toml to clipboard");
+    } catch (_) {
+      showToast("Clipboard copy blocked — open Raw TOML to copy");
+    }
+  });
+
+  // Drag & drop config.toml anywhere on page
+  const dropOverlay = document.getElementById("dropOverlay");
+  let dragDepth = 0;
+  window.addEventListener("dragenter", (e) => { e.preventDefault(); dragDepth++; dropOverlay.classList.add("show"); });
+  window.addEventListener("dragleave", () => { dragDepth--; if (dragDepth <= 0) { dragDepth = 0; dropOverlay.classList.remove("show"); } });
+  window.addEventListener("dragover", (e) => e.preventDefault());
+  window.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    dragDepth = 0;
+    dropOverlay.classList.remove("show");
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      loadTomlText(await file.text(), file.name);
+      showToast("Loaded " + file.name);
+    }
+  });
+
+  // Close overflow menu when clicking an action or clicking outside
+  const moreMenu = document.getElementById("moreMenu");
+  moreMenu.addEventListener("click", (e) => {
+    if (e.target.closest("button")) moreMenu.removeAttribute("open");
+  });
+  document.addEventListener("click", (e) => {
+    if (moreMenu.open && !moreMenu.contains(e.target)) moreMenu.removeAttribute("open");
+  });
+
+  // Auto-load ~/.config/mitos/config.toml from local server, falling back to localStorage
+  loadFromServer(true).then((ok) => {
+    if (ok) return;
+    const saved = (() => { try { return localStorage.getItem("mitos_config_toml"); } catch (_) { return null; } })();
+    if (saved) loadTomlText(saved);
+    else render();
+  });
+})();
+</script>
+</body>
+</html>
