@@ -31,8 +31,8 @@
   body {
     margin: 0;
     background:
-      radial-gradient(1000px 420px at 50% -120px, rgba(76, 141, 255, 0.12), transparent 65%),
-      radial-gradient(700px 360px at 85% 0%, rgba(168, 85, 247, 0.08), transparent 60%),
+      radial-gradient(1000px 420px at 50% -120px, color-mix(in srgb, var(--accent) 12%, transparent), transparent 65%),
+      radial-gradient(700px 360px at 85% 0%, color-mix(in srgb, var(--prefix) 8%, transparent), transparent 60%),
       var(--bg);
     color: var(--text);
     font-family: var(--font);
@@ -42,16 +42,16 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Header */
+  body.mitos-themed {
+    background: var(--bg);
+  }
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     padding: 12px 22px;
-    background: rgba(24, 27, 34, 0.86);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: var(--surface);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
@@ -103,15 +103,15 @@
     align-items: center;
     gap: 6px;
   }
-  button:hover { background: #272c38; border-color: #3e4659; }
+  button:hover { background: var(--key-hover); border-color: var(--muted); }
   button:active { transform: translateY(0.5px); }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  button.primary:hover { background: #3b7ef2; }
-  button.prefix-btn { background: var(--prefix); border-color: var(--prefix); color: #fff; }
-  button.prefix-btn:hover { background: #9333ea; }
-  button.danger { color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); }
-  button.danger:hover { background: rgba(239, 68, 68, 0.15); }
-  button.active { background: var(--accent-bg); border-color: var(--accent); color: #fff; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); }
+  button.primary:hover { filter: brightness(1.08); }
+  button.prefix-btn { background: var(--prefix); border-color: var(--prefix); color: var(--on-prefix, #fff); }
+  button.prefix-btn:hover { filter: brightness(1.08); }
+  button.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+  button.danger:hover { background: color-mix(in srgb, var(--danger) 15%, transparent); }
+  button.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
 
   main {
     max-width: 1260px;
@@ -169,7 +169,7 @@
     width: 34px;
     height: 20px;
     border-radius: 99px;
-    background: #2f3545;
+    background: var(--surface-2);
     position: relative;
     cursor: pointer;
     transition: background 0.15s;
@@ -184,11 +184,11 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--text);
     transition: transform 0.15s;
   }
   .switch-label input:checked { background: var(--accent); border-color: var(--accent); }
-  .switch-label input:checked::after { transform: translateX(14px); }
+  .switch-label input:checked::after { transform: translateX(14px); background: var(--on-accent, #fff); }
 
   /* Breadcrumb & Sub-keymaps bar */
   .nav-bar {
@@ -215,7 +215,7 @@
     cursor: pointer;
   }
   .crumb:hover { border-color: var(--accent); }
-  .crumb.current { background: var(--prefix-bg); border-color: var(--prefix); color: #e9d5ff; }
+  .crumb.current { background: var(--prefix-bg); border-color: var(--prefix); color: var(--prefix); }
   .crumb-sep { color: var(--muted); }
   .submap-chips {
     display: flex;
@@ -230,11 +230,11 @@
     padding: 3px 8px;
     border-radius: 6px;
     background: var(--prefix-bg);
-    border: 1px solid rgba(168, 85, 247, 0.45);
-    color: #e9d5ff;
+    border: 1px solid var(--prefix);
+    color: var(--prefix);
     cursor: pointer;
   }
-  .chip:hover { background: rgba(168, 85, 247, 0.3); }
+  .chip:hover { filter: brightness(1.1); }
   .chip.is-default-chip {
     background: var(--surface-2);
     border-color: var(--border);
@@ -244,8 +244,8 @@
 
   /* Mac Keyboard Chassis */
   .keyboard-chassis {
-    background: linear-gradient(180deg, #21252f 0%, #161921 100%);
-    border: 1px solid #32394a;
+    background: var(--chassis-bg, linear-gradient(180deg, #21252f 0%, #161921 100%));
+    border: 1px solid var(--border);
     border-radius: 18px;
     padding: 16px;
     box-shadow:
@@ -283,49 +283,52 @@
     color: var(--text);
   }
   .kb-row.fn-row .key { height: 44px; padding: 4px 6px; }
-  .key:hover { background: var(--key-hover); border-color: #55617a; transform: translateY(-1px); }
+  .key:hover { background: var(--key-hover); border-color: var(--muted); transform: translateY(-1px); }
   .key:active { transform: translateY(0); }
   .key.is-selected {
-    box-shadow: 0 0 0 2px var(--accent), 0 4px 14px rgba(76, 141, 255, 0.3);
+    box-shadow: 0 0 0 2px var(--accent), 0 4px 14px color-mix(in srgb, var(--accent) 30%, transparent);
     border-color: var(--accent);
     z-index: 2;
   }
 
   /* Binding state visuals */
   .key.is-custom {
-    background: linear-gradient(180deg, rgba(76, 141, 255, 0.28), rgba(76, 141, 255, 0.12));
-    border-color: rgba(76, 141, 255, 0.75);
+    background: color-mix(in srgb, var(--accent) 13%, var(--surface-2));
+    border-color: color-mix(in srgb, var(--accent) 75%, var(--border));
   }
+  .key.is-custom .key-legend { color: var(--accent); }
   .key.is-override {
-    background: linear-gradient(180deg, rgba(245, 158, 11, 0.28), rgba(245, 158, 11, 0.11));
-    border-color: rgba(245, 158, 11, 0.75);
+    background: color-mix(in srgb, var(--override) 13%, var(--surface-2));
+    border-color: color-mix(in srgb, var(--override) 75%, var(--border));
   }
+  .key.is-override .key-legend { color: var(--override); }
   .key.is-prefix {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.3), rgba(168, 85, 247, 0.13));
-    border-color: rgba(168, 85, 247, 0.8);
+    background: color-mix(in srgb, var(--prefix) 14%, var(--surface-2));
+    border-color: color-mix(in srgb, var(--prefix) 75%, var(--border));
   }
+  .key.is-prefix .key-legend { color: var(--prefix); }
   .key.is-prefix.is-default {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.12), rgba(32, 36, 46, 0.96));
-    border-color: rgba(168, 85, 247, 0.35);
+    background: color-mix(in srgb, var(--prefix) 7%, var(--surface-2));
+    border-color: color-mix(in srgb, var(--prefix) 42%, var(--border));
   }
   .key.is-default {
-    background: #1d212b;
-    border-color: #2b3140;
+    background: var(--key-default-bg, #1d212b);
+    border-color: var(--key-default-border, #2b3140);
   }
   .key.is-unbound {
-    background: #171a22;
-    border-color: #222734;
-    color: #555d70;
+    background: var(--key-unbound-bg, #171a22);
+    border-color: var(--key-unbound-border, #222734);
+    color: var(--muted);
   }
   .key.is-mod-key {
-    background: #1b1f28;
-    border-color: #2d3342;
+    background: var(--key-mod-bg, #1b1f28);
+    border-color: var(--key-default-border, #2d3342);
     color: var(--muted);
   }
   .key.is-mod-key.mod-active {
     background: var(--accent-bg);
     border-color: var(--accent);
-    color: #fff;
+    color: var(--accent);
     box-shadow: inset 0 0 0 1px var(--accent);
   }
   .key.is-disabled {
@@ -347,7 +350,7 @@
     letter-spacing: -0.01em;
     white-space: nowrap;
   }
-  .key.is-default .key-legend { color: #b2bacb; font-weight: 600; }
+  .key.is-default .key-legend { color: var(--muted); font-weight: 600; }
   .key-sublegend {
     font-size: 10px;
     color: var(--muted);
@@ -357,20 +360,21 @@
     font-size: 9.5px;
     padding: 1px 5px;
     border-radius: 99px;
-    background: rgba(168, 85, 247, 0.4);
-    color: #f3e8ff;
+    background: var(--prefix-bg);
+    color: var(--prefix);
     font-weight: 600;
   }
   .key.is-default .key-badge {
-    background: rgba(168, 85, 247, 0.18);
-    color: #c4b5fd;
+    background: var(--prefix-bg);
+    color: var(--prefix);
+    opacity: 0.85;
   }
   .key-cmd {
     font-family: var(--font);
     font-size: 11px;
     font-weight: 500;
     line-height: 1.2;
-    color: #f4f7ff;
+    color: var(--text);
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -381,8 +385,8 @@
     font-family: var(--mono);
     font-size: 9.5px;
   }
-  .key.is-default .key-cmd { color: #8c96ad; font-weight: 400; }
-  .key.is-unbound .key-cmd { color: #464d5e; }
+  .key.is-default .key-cmd { color: var(--muted); font-weight: 400; }
+  .key.is-unbound .key-cmd { color: var(--muted); opacity: 0.55; }
   .key-mod-label {
     font-size: 10.5px;
     display: flex;
@@ -423,9 +427,9 @@
     padding: 7px 12px;
     border-radius: 8px;
     background: var(--prefix-bg);
-    border: 1px solid rgba(168, 85, 247, 0.5);
+    border: 1px solid color-mix(in srgb, var(--prefix) 50%, transparent);
     font-size: 12.5px;
-    color: #f3e8ff;
+    color: var(--prefix);
   }
   .menu-banner.show { display: flex; }
   .linked-keys {
@@ -444,18 +448,18 @@
     padding: 2px 8px;
     border-radius: 99px;
     background: var(--prefix-bg);
-    border: 1px solid rgba(168, 85, 247, 0.5);
-    color: #f3e8ff;
+    border: 1px solid color-mix(in srgb, var(--prefix) 50%, transparent);
+    color: var(--prefix);
   }
   .linked-pill button {
     border: none;
     background: transparent;
-    color: #d8b4fe;
+    color: var(--prefix);
     padding: 0 2px;
     font-size: 12px;
     line-height: 1;
   }
-  .linked-pill button:hover { color: #fff; background: transparent; }
+  .linked-pill button:hover { color: var(--text); background: transparent; }
 
   .bind-sub {
     font-size: 11px;
@@ -474,12 +478,12 @@
     font-weight: 500;
   }
   button.dirty {
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--override) 50%, transparent);
     background: var(--override);
     border-color: var(--override);
-    color: #111;
+    color: var(--on-override, #111);
   }
-  button.dirty:hover { background: #fbbf24; }
+  button.dirty:hover { filter: brightness(1.08); }
 
   /* Legend row */
   .legend {
@@ -544,11 +548,11 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
-  .tag-custom { background: var(--accent-bg); color: #93c5fd; }
-  .tag-override { background: var(--override-bg); color: #fcd34d; }
-  .tag-prefix { background: var(--prefix-bg); color: #d8b4fe; }
+  .tag-custom { background: var(--accent-bg); color: var(--accent); }
+  .tag-override { background: var(--override-bg); color: var(--override); }
+  .tag-prefix { background: var(--prefix-bg); color: var(--prefix); }
   .tag-default { background: var(--surface-2); color: var(--muted); }
-  .tag-unbound { background: #1c202a; color: #64748b; }
+  .tag-unbound { background: var(--surface-2); color: var(--muted); }
 
   label.field {
     display: flex;
@@ -609,13 +613,13 @@
     font-family: var(--mono);
     font-size: 12px;
   }
-  .bind-row:hover { border-color: var(--border); background: #151821; }
+  .bind-row:hover { border-color: var(--border); background: var(--surface-2); }
   .bind-row.selected { border-color: var(--accent); background: var(--accent-bg); }
   .bind-key { font-weight: 600; color: var(--text); min-width: 64px; }
   .bind-val { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; text-align: right; }
-  .bind-row.is-custom .bind-val { color: #93c5fd; }
-  .bind-row.is-override .bind-val { color: #fcd34d; }
-  .bind-row.is-prefix .bind-val { color: #d8b4fe; }
+  .bind-row.is-custom .bind-val { color: var(--accent); }
+  .bind-row.is-override .bind-val { color: var(--override); }
+  .bind-row.is-prefix .bind-val { color: var(--prefix); }
 
   /* Raw TOML panel */
   .toml-panel {
@@ -630,7 +634,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: #232836;
+    background: var(--surface-2);
     color: var(--text);
     border: 1px solid var(--accent);
     padding: 9px 14px;
@@ -667,13 +671,11 @@
     pointer-events: none;
     width: 280px;
     max-width: calc(100vw - 24px);
-    background: rgba(22, 26, 34, 0.96);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid #3b4459;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 11px;
     padding: 10px 12px;
-    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
     opacity: 0;
     transform: translateY(4px);
     transition: opacity 0.1s ease, transform 0.1s ease;
@@ -692,7 +694,7 @@
     font-family: var(--mono);
     font-size: 12px;
     font-weight: 700;
-    color: #fff;
+    color: var(--text);
   }
   .tt-title {
     font-size: 13.5px;
@@ -702,8 +704,8 @@
   .tt-raw {
     font-family: var(--mono);
     font-size: 11px;
-    color: #93c5fd;
-    background: rgba(76, 141, 255, 0.12);
+    color: var(--accent);
+    background: var(--accent-bg);
     padding: 2px 6px;
     border-radius: 5px;
     align-self: flex-start;
@@ -711,7 +713,7 @@
   }
   .tt-desc {
     font-size: 12px;
-    color: #b7c0d4;
+    color: var(--muted);
     line-height: 1.4;
   }
   .tt-sub {
@@ -730,12 +732,12 @@
     font-family: var(--mono);
     font-size: 11px;
   }
-  .tt-preview-row span:first-child { color: #e9d5ff; font-weight: 600; }
-  .tt-preview-row span:last-child { color: #b7c0d4; font-family: var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tt-preview-row span:first-child { color: var(--prefix); font-weight: 600; }
+  .tt-preview-row span:last-child { color: var(--text); font-family: var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .cmd-desc-hint {
     font-size: 12px;
-    color: #a8b3ca;
+    color: var(--muted);
     margin-top: 2px;
   }
 
@@ -754,7 +756,7 @@
     user-select: none;
   }
   .more-menu summary::-webkit-details-marker { display: none; }
-  .more-menu summary:hover { background: #272c38; border-color: #3e4659; }
+  .more-menu summary:hover { background: var(--key-hover); border-color: var(--muted); }
   .more-menu-list {
     position: absolute;
     right: 0;
@@ -822,9 +824,9 @@
     letter-spacing: -0.02em;
     color: var(--text);
   }
-  .stat-val.accent { color: #93c5fd; }
-  .stat-val.override { color: #fcd34d; }
-  .stat-val.prefix { color: #d8b4fe; }
+  .stat-val.accent { color: var(--accent); }
+  .stat-val.override { color: var(--override); }
+  .stat-val.prefix { color: var(--prefix); }
   .stat-val.mono { font-family: var(--mono); font-size: 13px; padding-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .stat-label {
     font-size: 11px;
@@ -837,7 +839,7 @@
   /* ---- UI polish ---- */
   .header-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .file-badge { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .file-badge.dirty { color: #fcd34d; border-color: rgba(245, 158, 11, 0.5); }
+  .file-badge.dirty { color: var(--override); border-color: color-mix(in srgb, var(--override) 50%, transparent); }
   .file-badge.dirty::after { content: " •"; }
   .icon-btn { padding: 6px 9px; font-size: 14px; line-height: 1; }
   .toolbar-sep { width: 1px; height: 20px; background: var(--border); margin: 0 2px; }
@@ -858,8 +860,8 @@
   .arrow-cluster .key-cmd { display: block; width: auto; flex: 1; min-width: 0; white-space: nowrap; text-overflow: ellipsis; }
 
   @keyframes key-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(76, 141, 255, 0.7); }
-    100% { box-shadow: 0 0 0 10px rgba(76, 141, 255, 0); }
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); }
+    100% { box-shadow: 0 0 0 10px transparent; }
   }
   .key.is-selected.pulse { animation: key-pulse 0.45s ease-out; }
 
@@ -874,7 +876,7 @@
     border-bottom-width: 2px;
     color: var(--text);
   }
-  .legend-hint.mods-on { color: #93c5fd; }
+  .legend-hint.mods-on { color: var(--accent); }
   .legend-hint button { padding: 2px 8px; font-size: 11.5px; margin-left: 6px; }
 
   /* Inspector empty state */
@@ -897,7 +899,7 @@
     display: grid;
     place-items: center;
     background: var(--accent-bg);
-    color: #93c5fd;
+    color: var(--accent);
     margin-bottom: 6px;
   }
   .empty-title { font-size: 15px; font-weight: 600; color: var(--text); }
@@ -922,7 +924,7 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #3a4254;
+    background: var(--border);
   }
   .bind-row.is-custom::before { background: var(--accent); }
   .bind-row.is-override::before { background: var(--override); }
@@ -936,6 +938,98 @@
     white-space: nowrap;
   }
   .bind-val { text-align: left; }
+  /* ⌘K Mode & Menu Quick Switcher */
+  .cmdk-dialog {
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--surface);
+    color: var(--text);
+    width: 460px;
+    max-width: calc(100vw - 24px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    margin-top: 12vh;
+  }
+  .cmdk-dialog::backdrop {
+    background: rgba(8, 10, 14, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .cmdk-input {
+    width: 100%;
+    border: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 13px 15px !important;
+    font-family: var(--font) !important;
+    font-size: 14px !important;
+    color: var(--text);
+  }
+  .cmdk-list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cmdk-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    color: var(--text);
+  }
+  .cmdk-item:hover, .cmdk-item.active { background: var(--accent-bg); }
+  .cmdk-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .cmdk-path { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .cmdk-name { font-size: 12.5px; color: var(--prefix); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cmdk-meta { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .kbd-hint { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+  /* General Config Settings tab */
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 14px;
+  }
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(44, 50, 64, 0.55);
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .setting-title { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .setting-key { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .setting-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  .setting-ctrl { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .setting-ctrl input[type="text"], .setting-ctrl input[type="number"], .setting-ctrl select {
+    width: 155px;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  .setting-reset {
+    padding: 3px 6px;
+    font-size: 11px;
+    color: var(--muted);
+    border-color: transparent;
+    background: transparent;
+  }
+  .setting-reset:hover { color: var(--text); background: var(--surface-2); }
+  .tab-sep { width: 1px; height: 16px; background: var(--border); margin: 0 3px; align-self: center; }
 </style>
 </head>
 <body>
@@ -951,6 +1045,7 @@
     <button id="undoBtn" class="icon-btn" title="Undo (⌘Z)" disabled>↶</button>
     <button id="redoBtn" class="icon-btn" title="Redo (⇧⌘Z)" disabled>↷</button>
     <span class="toolbar-sep"></span>
+    <button id="cmdkBtn" title="Jump to mode or menu (⌘K)"><span class="kbd-hint">⌘K</span></button>
     <button id="statsToggleBtn">Stats</button>
     <button id="rawToggleBtn">Raw TOML</button>
     <button id="reloadBtn" style="display:none" title="Reload from disk">Reload</button>
@@ -966,10 +1061,19 @@
           <span>Hide defaults</span>
           <input type="checkbox" id="hideDefaultsToggle">
         </label>
+        <label class="switch-label more-menu-toggle" title="Press any physical key combo to auto-select it on the keyboard">
+          <span>Key capture</span>
+          <input type="checkbox" id="keyCaptureToggle" checked>
+        </label>
+        <label class="switch-label more-menu-toggle" title="Apply your Mitos theme colors to the WebUI (off = default WebUI theme)">
+          <span>Match Mitos theme</span>
+          <input type="checkbox" id="matchThemeToggle">
+        </label>
         <div class="more-menu-divider"></div>
         <button id="openBtn">Open config.toml…</button>
         <button id="downloadBtn">Download TOML</button>
         <button id="copyBtn">Copy TOML</button>
+        <button id="syncDefaultsBtn">Sync Mitos Defaults</button>
         <button id="sampleBtn">Load Sample</button>
       </div>
     </details>
@@ -995,6 +1099,7 @@
     <div id="parseError" style="color:#fca5a5;font-family:var(--mono);font-size:12px;display:none;"></div>
   </section>
 
+  <div id="keybindsView" style="display:flex;flex-direction:column;gap:14px;">
   <!-- Shared Menu Sync Banner -->
   <div class="menu-banner" id="menuBanner">
     <span id="menuBannerText"></span>
@@ -1014,7 +1119,7 @@
       <span><span class="legend-dot" style="background:var(--accent)"></span>Custom</span>
       <span><span class="legend-dot" style="background:var(--override)"></span>Overrides Default</span>
       <span><span class="legend-dot" style="background:var(--prefix)"></span>Sub-keymap</span>
-      <span><span class="legend-dot" style="background:#3a4254"></span>Default</span>
+      <span><span class="legend-dot" style="background:var(--border)"></span>Default</span>
     </div>
     <div class="legend-hint" id="legendHint"></div>
   </div>
@@ -1050,6 +1155,7 @@
           <span>Binding Type</span>
           <select id="bindType">
             <option value="command">Single Command (e.g. move_char_left or :write)</option>
+            <option value="macro">Insert Text / Type Keys (@...)</option>
             <option value="sequence">Command Sequence / Macro (array of commands)</option>
             <option value="prefix">Sub-keymap / Prefix Chord (e.g. q + something)</option>
             <option value="noop">Unbind (no_op)</option>
@@ -1063,23 +1169,43 @@
           <span class="cmd-desc-hint" id="cmdDescHint"></span>
         </label>
 
+        <div id="macroField" style="display:none;flex-direction:column;gap:8px;">
+          <label class="field">
+            <span>Text or keys to type</span>
+            <input type="text" id="macroInput" placeholder="e.g. ->, (), <esc>, hello">
+          </label>
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;" id="macroKeyChips">
+            <span style="font-size:11px;color:var(--muted);">Special keys:</span>
+            <button type="button" class="chip is-default-chip" data-insert="<esc>">&lt;esc&gt;</button>
+            <button type="button" class="chip is-default-chip" data-insert="<ret>">&lt;ret&gt;</button>
+            <button type="button" class="chip is-default-chip" data-insert="<tab>">&lt;tab&gt;</button>
+            <button type="button" class="chip is-default-chip" data-insert="<space>">&lt;space&gt;</button>
+            <button type="button" class="chip is-default-chip" data-insert="<backspace>">&lt;backspace&gt;</button>
+          </div>
+          <label class="switch-label" id="macroWrapRow" style="font-size:12px;">
+            <input type="checkbox" id="macroWrapToggle" checked>
+            <span>Wrap with insert → normal (types text while in normal mode)</span>
+          </label>
+          <span class="cmd-desc-hint" id="macroPreview" style="font-family:var(--mono);font-size:11.5px;"></span>
+        </div>
+
         <label class="field" id="seqField" style="display:none">
           <span>Commands (one per line)</span>
           <textarea id="seqInput" placeholder="collapse_selection&#10;normal_mode"></textarea>
         </label>
 
-        <div id="prefixInfo" style="display:none;flex-direction:column;gap:8px;font-size:12.5px;color:#e9d5ff;background:var(--prefix-bg);border:1px solid rgba(168,85,247,0.4);border-radius:7px;padding:10px 11px;">
-          <label class="field" style="color:#e9d5ff;">
+        <div id="prefixInfo" style="display:none;flex-direction:column;gap:8px;font-size:12.5px;color:var(--prefix);background:var(--prefix-bg);border:1px solid color-mix(in srgb, var(--prefix) 40%, transparent);border-radius:7px;padding:10px 11px;">
+          <label class="field" style="color:var(--prefix);">
             <span>Shared Menu Name (optional — reuse a name to link keys)</span>
             <input type="text" id="menuNameInput" list="sharedMenuNames" placeholder="e.g. quicklist">
             <datalist id="sharedMenuNames"></datalist>
           </label>
-          <label class="switch-label" style="font-size:12px;color:#e9d5ff;">
+          <label class="switch-label" id="linkAllNonInsertRow" style="font-size:12px;color:var(--prefix);">
             <input type="checkbox" id="linkAllNonInsert">
             <span>Link in all non-insert modes (normal &amp; select)</span>
           </label>
           <div id="linkedKeysWrap" style="display:none;">
-            <div style="font-size:11.5px;color:#d8b4fe;margin-bottom:4px;">Keys bound to this shared menu:</div>
+            <div style="font-size:11.5px;color:var(--prefix);margin-bottom:4px;">Keys bound to this shared menu:</div>
             <div class="linked-keys" id="linkedKeysList"></div>
             <div style="display:flex;gap:6px;margin-top:7px;">
               <input type="text" id="addLinkedKeyInput" placeholder="Add key (e.g. b, minus, C-q)" style="flex:1;padding:5px 8px;font-size:12px;">
@@ -1112,7 +1238,16 @@
       <div class="bind-list" id="bindList"></div>
     </div>
   </section>
+  </div>
+
+  <!-- General (Non-Keybind) Config Settings Tab -->
+  <section id="settingsView" class="settings-grid" style="display:none;" aria-label="General Settings"></section>
 </main>
+
+<dialog class="cmdk-dialog" id="cmdkDialog" aria-label="Jump to mode or menu">
+  <input type="text" class="cmdk-input" id="cmdkInput" placeholder="Jump to mode or menu… (e.g. select, quicklist, space, goto)" autocomplete="off">
+  <div class="cmdk-list" id="cmdkList"></div>
+</dialog>
 
 <div class="drop-overlay" id="dropOverlay">Drop config.toml to load</div>
 <div class="key-tooltip" id="keyTooltip" role="tooltip"></div>
@@ -1123,7 +1258,15 @@
 <script>
 (() => {
   const { MITOS_DEFAULTS, COMMON_COMMANDS, COMMAND_LABELS, SUBMAP_LABELS, prettyCommand, describeCommand, mirrorCommandForMode } = window.MitosDefaults;
-  const { parseMitosConfig, serializeMitosConfig, menuPathKey, isPlainObject } = window.MitosToml;
+  const {
+    parseMitosConfig,
+    serializeMitosConfig,
+    readGeneralSettings,
+    setGeneralSetting,
+    removeGeneralSetting,
+    menuPathKey,
+    isPlainObject,
+  } = window.MitosToml;
 
   const SAMPLE_CONFIG = `theme = "modus-vivendi"
 
@@ -1222,11 +1365,14 @@ h = ":toggle soft-wrap.enable"
     keys: {},
     preservedLines: [],
     menuGroups: {}, // "mode\0key..." -> shared menu name
+    activeTab: "keys", // "keys" | "settings"
     mode: "normal",
     prefixPath: [], // e.g. ["q"] for q + something, ["space", "w"] for space + w + ...
     mods: { shift: false, ctrl: false, alt: false },
     hideDefaults: false,
     friendlyNames: true,
+    keyCapture: true,
+    matchTheme: (() => { try { return localStorage.getItem("mitos_match_theme") === "1"; } catch (_) { return false; } })(),
     dirty: false,
     history: [],
     future: [],
@@ -1269,7 +1415,9 @@ h = ":toggle soft-wrap.enable"
     return isPlainObject(cur) ? cur : null;
   }
 
-  // If the user replaced a default sub-keymap with a scalar (or vice versa), defaults inside it don't apply
+  // If the user replaced a default sub-keymap with a scalar (or vice versa), defaults inside it don't apply.
+  // If the current layer is a shared menu linked to a built-in default menu (e.g. `normal.space` linked
+  // into `insert.d.space`), inherit that peer's defaults so you see all of them immediately.
   function getDefaultLayer() {
     let uCur = state.keys[state.mode];
     let dCur = MITOS_DEFAULTS[state.mode];
@@ -1277,11 +1425,27 @@ h = ":toggle soft-wrap.enable"
       const uNext = isPlainObject(uCur) ? uCur[seg] : undefined;
       const dNext = isPlainObject(dCur) ? dCur[seg] : undefined;
       if (uNext !== undefined && !isPlainObject(uNext)) return null;
-      if (!isPlainObject(dNext)) return null;
+      if (!isPlainObject(dNext)) {
+        dCur = null;
+        break;
+      }
       uCur = uNext;
       dCur = dNext;
     }
-    return isPlainObject(dCur) ? dCur : null;
+    if (isPlainObject(dCur)) return dCur;
+
+    // Fallback: check if this path (or an ancestor) is linked to a shared menu with built-in defaults
+    for (let depth = state.prefixPath.length; depth >= 1; depth--) {
+      const subPath = state.prefixPath.slice(0, depth);
+      const menuName = getMenuName(state.mode, subPath);
+      if (!menuName) continue;
+      const rest = state.prefixPath.slice(depth);
+      for (const peer of getLinkedPaths(menuName)) {
+        const peerDef = getNode(MITOS_DEFAULTS, peer.mode, peer.path.concat(rest));
+        if (peerDef) return peerDef;
+      }
+    }
+    return null;
   }
 
   function getUserLayer() {
@@ -1346,6 +1510,35 @@ h = ":toggle soft-wrap.enable"
     return JSON.parse(JSON.stringify(v));
   }
 
+  function deepMergeDefaults(defObj, userObj) {
+    const out = isPlainObject(defObj) ? cloneVal(defObj) : {};
+    if (!isPlainObject(userObj)) return out;
+    for (const [k, v] of Object.entries(userObj)) {
+      if (isPlainObject(v) && isPlainObject(out[k])) {
+        out[k] = deepMergeDefaults(out[k], v);
+      } else {
+        out[k] = cloneVal(v);
+      }
+    }
+    return out;
+  }
+
+  function stripMatchingDefaults(obj, defObj) {
+    if (!isPlainObject(obj)) return obj;
+    if (!isPlainObject(defObj)) return cloneVal(obj);
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) {
+      const hasDef = Object.prototype.hasOwnProperty.call(defObj, k);
+      if (hasDef && isPlainObject(v) && isPlainObject(defObj[k])) {
+        const sub = stripMatchingDefaults(v, defObj[k]);
+        if (Object.keys(sub).length > 0) out[k] = sub;
+      } else if (!hasDef || JSON.stringify(v) !== JSON.stringify(defObj[k])) {
+        out[k] = cloneVal(v);
+      }
+    }
+    return out;
+  }
+
   function getMenuName(mode, pathParts) {
     return state.menuGroups[menuPathKey([mode, ...pathParts])] || null;
   }
@@ -1372,11 +1565,14 @@ h = ":toggle soft-wrap.enable"
     cur[pathParts[pathParts.length - 1]] = val;
   }
 
-  // Propagate changes from a source menu path to all other keys linked to the same shared menu
-  function syncMenuGroup(menuName, sourceObj) {
+  // Propagate changes from a source menu path to all other keys linked to the same shared menu.
+  // When `sourceDef` is provided (e.g. linking a built-in menu like `space` or `g`), materialize
+  // its defaults into the config for every linked key so nothing is lost when moved elsewhere.
+  function syncMenuGroup(menuName, sourceObj, sourceDef) {
     if (!menuName || !isPlainObject(sourceObj)) return;
+    const effectiveFull = sourceDef ? deepMergeDefaults(sourceDef, sourceObj) : cloneVal(sourceObj);
     for (const entry of getLinkedPaths(menuName)) {
-      setPathValue(entry.mode, entry.path, cloneVal(sourceObj));
+      setPathValue(entry.mode, entry.path, cloneVal(effectiveFull));
     }
   }
 
@@ -1387,7 +1583,7 @@ h = ":toggle soft-wrap.enable"
       const menuName = getMenuName(state.mode, subPath);
       if (menuName) {
         const node = getNode(state.keys, state.mode, subPath) || {};
-        syncMenuGroup(menuName, node);
+        syncMenuGroup(menuName, node, null);
       }
     }
   }
@@ -1467,6 +1663,9 @@ h = ":toggle soft-wrap.enable"
 
   function shortLabel(val) {
     if (Array.isArray(val)) {
+      if (val.length === 3 && val[0] === "insert_mode" && typeof val[1] === "string" && val[1].startsWith("@") && val[2] === "normal_mode") {
+        return formatCmd(val[1]);
+      }
       const first = formatCmd(val[0] || "");
       return val.length > 1 ? `${first} +${val.length - 1}` : first;
     }
@@ -1556,15 +1755,425 @@ h = ":toggle soft-wrap.enable"
 
   // Render everything
   function render() {
+    applyWebUiTheme();
     renderStats();
     renderModeTabs();
-    renderBreadcrumbAndSubmaps();
-    renderKeyboard();
-    renderLegendHint();
-    renderInspector();
-    renderBindList();
+    const isSettings = state.activeTab === "settings";
+    document.getElementById("keybindsView").style.display = isSettings ? "none" : "flex";
+    document.getElementById("settingsView").style.display = isSettings ? "grid" : "none";
+    if (isSettings) {
+      renderSettings();
+    } else {
+      renderBreadcrumbAndSubmaps();
+      renderKeyboard();
+      renderLegendHint();
+      renderInspector();
+      renderBindList();
+    }
     syncRawToml();
     updateChrome();
+  }
+
+  // Real Mitos theme loader (reads ~/.config/mitos/themes + built-in Mitos themes via server.py)
+  const themeColorCache = new Map();
+  let availableThemes = [];
+  let appliedThemeName = null;
+
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace("#", "");
+    const n = parseInt(h, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+  }
+
+  function applyPaletteVars(p) {
+    const rootStyle = document.documentElement.style;
+    const vars = [
+      "--bg", "--surface", "--surface-2", "--border", "--text", "--muted",
+      "--accent", "--accent-bg", "--on-accent",
+      "--override", "--override-bg", "--on-override",
+      "--prefix", "--prefix-bg", "--on-prefix", "--danger",
+      "--key-bg", "--key-hover", "--key-border", "--chassis-bg",
+      "--key-default-bg", "--key-default-border", "--key-unbound-bg", "--key-unbound-border", "--key-mod-bg",
+    ];
+    if (!p) {
+      document.body.classList.remove("mitos-themed");
+      vars.forEach((v) => rootStyle.removeProperty(v));
+      return;
+    }
+    document.body.classList.add("mitos-themed");
+    rootStyle.setProperty("--bg", p.bg);
+    rootStyle.setProperty("--surface", p.surface);
+    rootStyle.setProperty("--surface-2", p.surface2);
+    rootStyle.setProperty("--border", p.border);
+    rootStyle.setProperty("--text", p.text);
+    rootStyle.setProperty("--muted", p.muted);
+    rootStyle.setProperty("--accent", p.accent);
+    rootStyle.setProperty("--accent-bg", hexToRgba(p.accent, p.light ? 0.14 : 0.18));
+    if (p.onAccent) rootStyle.setProperty("--on-accent", p.onAccent);
+    rootStyle.setProperty("--override", p.override);
+    rootStyle.setProperty("--override-bg", hexToRgba(p.override, p.light ? 0.15 : 0.18));
+    if (p.onOverride) rootStyle.setProperty("--on-override", p.onOverride);
+    rootStyle.setProperty("--prefix", p.prefix);
+    rootStyle.setProperty("--prefix-bg", hexToRgba(p.prefix, p.light ? 0.14 : 0.2));
+    if (p.onPrefix) rootStyle.setProperty("--on-prefix", p.onPrefix);
+    if (p.danger) rootStyle.setProperty("--danger", p.danger);
+    rootStyle.setProperty("--key-bg", p.surface2);
+    rootStyle.setProperty("--key-hover", p.border);
+    rootStyle.setProperty("--key-border", p.border);
+    rootStyle.setProperty("--chassis-bg", p.surface);
+    rootStyle.setProperty("--key-default-bg", p.surface2);
+    rootStyle.setProperty("--key-default-border", p.border);
+    rootStyle.setProperty("--key-unbound-bg", p.bg);
+    rootStyle.setProperty("--key-unbound-border", p.surface2);
+    rootStyle.setProperty("--key-mod-bg", p.surface);
+  }
+
+  function applyWebUiTheme() {
+    if (!state.matchTheme) {
+      appliedThemeName = "";
+      applyPaletteVars(null);
+      return;
+    }
+    const settings = readGeneralSettings(state.preservedLines);
+    const themeName = typeof settings.theme === "string" ? settings.theme.trim() : "";
+    if (!themeName) {
+      appliedThemeName = "";
+      applyPaletteVars(null);
+      return;
+    }
+    if (themeColorCache.has(themeName)) {
+      appliedThemeName = themeName;
+      applyPaletteVars(themeColorCache.get(themeName));
+      return;
+    }
+    if (appliedThemeName === themeName) return;
+    appliedThemeName = themeName;
+    fetch(`/api/theme?name=${encodeURIComponent(themeName)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const colors = data && data.colors ? data.colors : null;
+        themeColorCache.set(themeName, colors);
+        if (appliedThemeName === themeName) applyPaletteVars(colors);
+      })
+      .catch(() => {});
+  }
+
+  function loadThemeListFromServer() {
+    fetch("/api/themes")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data || !Array.isArray(data.themes)) return;
+        availableThemes = data.themes;
+        const dl = document.getElementById("mitosThemes");
+        if (dl) {
+          dl.innerHTML = "";
+          availableThemes.forEach((name) => {
+            const opt = document.createElement("option");
+            opt.value = name;
+            dl.appendChild(opt);
+          });
+        }
+      })
+      .catch(() => {});
+  }
+
+  const GENERAL_GROUPS = [
+    {
+      title: "Appearance",
+      items: [
+        { section: [], key: "theme", label: "Theme", type: "theme", placeholder: "Search theme…" },
+        { section: ["editor"], key: "line-number", label: "Line numbers", type: "select", options: ["", "absolute", "relative"], def: "absolute" },
+        { section: ["editor"], key: "cursorline", label: "Highlight cursor line", type: "bool", def: false },
+        { section: ["editor"], key: "cursorcolumn", label: "Highlight cursor column", type: "bool", def: false },
+        { section: ["editor"], key: "bufferline", label: "Buffer tabs bar", type: "select", options: ["", "never", "always", "multiple"], def: "never" },
+        { section: ["editor"], key: "color-modes", label: "Color mode indicator", type: "bool", def: false },
+        { section: ["editor", "rainbow-brackets"], key: "enable", label: "Rainbow brackets", type: "bool", def: false },
+        { section: ["editor", "indent-guides"], key: "render", label: "Indent guides", type: "bool", def: false },
+      ],
+    },
+    {
+      title: "Editing & Behavior",
+      items: [
+        { section: ["editor"], key: "mouse", label: "Mouse support", type: "bool", def: true },
+        { section: ["editor"], key: "scrolloff", label: "Scroll offset lines", type: "number", placeholder: "5" },
+        { section: ["editor"], key: "auto-save", label: "Auto save on focus lost", type: "bool", def: false },
+        { section: ["editor"], key: "auto-format", label: "Auto format on save", type: "bool", def: true },
+        { section: ["editor"], key: "auto-pairs", label: "Auto-close brackets/quotes", type: "bool", def: true },
+        { section: ["editor", "soft-wrap"], key: "enable", label: "Soft line wrap", type: "bool", def: false },
+        { section: ["editor", "clipboard"], key: "default-yank-register", label: "Use global clipboard", type: "global-clipboard" },
+      ],
+    },
+    {
+      title: "Cursor Shape",
+      items: [
+        { section: ["editor", "cursor-shape"], key: "normal", label: "Normal mode cursor", type: "select", options: ["", "block", "bar", "underline", "hidden"], def: "block" },
+        { section: ["editor", "cursor-shape"], key: "insert", label: "Insert mode cursor", type: "select", options: ["", "block", "bar", "underline", "hidden"], def: "block" },
+        { section: ["editor", "cursor-shape"], key: "select", label: "Select mode cursor", type: "select", options: ["", "block", "bar", "underline", "hidden"], def: "block" },
+      ],
+    },
+    {
+      title: "LSP & Diagnostics",
+      items: [
+        { section: ["editor", "lsp"], key: "display-inlay-hints", label: "Inlay hints", type: "bool", def: false },
+        { section: ["editor", "lsp"], key: "display-messages", label: "LSP status messages", type: "bool", def: true },
+        { section: ["editor", "lsp"], key: "auto-signature-help", label: "Auto signature help", type: "bool", def: true },
+      ],
+    },
+  ];
+
+  function getSettingVal(settingsObj, section, key) {
+    let cur = settingsObj;
+    for (const seg of section) {
+      if (!isPlainObject(cur)) return undefined;
+      cur = cur[seg];
+    }
+    return isPlainObject(cur) && Object.prototype.hasOwnProperty.call(cur, key) ? cur[key] : undefined;
+  }
+
+  function applyGeneralSetting(section, key, val) {
+    pushHistory();
+    state.preservedLines = setGeneralSetting(state.preservedLines, section, key, val);
+    persistToLocalStorage();
+    setDirty(true);
+    render();
+  }
+
+  function clearGeneralSetting(section, key) {
+    pushHistory();
+    state.preservedLines = removeGeneralSetting(state.preservedLines, section, key);
+    persistToLocalStorage();
+    setDirty(true);
+    render();
+  }
+
+  function renderSettings() {
+    const root = document.getElementById("settingsView");
+    root.innerHTML = "";
+    const current = readGeneralSettings(state.preservedLines);
+    const knownKeys = new Set();
+
+    GENERAL_GROUPS.forEach((group) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      const head = document.createElement("div");
+      head.className = "card-head";
+      head.innerHTML = `<h2 class="card-title"></h2>`;
+      head.firstChild.textContent = group.title;
+      card.appendChild(head);
+
+      group.items.forEach((item) => {
+        const fullKey = [...item.section, item.key].join(".");
+        knownKeys.add(fullKey);
+        const curVal = getSettingVal(current, item.section, item.key);
+        const isSet = curVal !== undefined;
+
+        const row = document.createElement("div");
+        row.className = "setting-row";
+
+        const meta = document.createElement("div");
+        meta.className = "setting-meta";
+        const title = document.createElement("div");
+        title.className = "setting-title";
+        title.textContent = item.label;
+        if (isSet) {
+          const dot = document.createElement("span");
+          dot.className = "setting-dot";
+          dot.title = "Explicitly set in config.toml";
+          title.appendChild(dot);
+        }
+        const keyLbl = document.createElement("div");
+        keyLbl.className = "setting-key";
+        keyLbl.textContent = fullKey;
+        meta.appendChild(title);
+        meta.appendChild(keyLbl);
+
+        const ctrl = document.createElement("div");
+        ctrl.className = "setting-ctrl";
+
+        if (item.type === "bool") {
+          const lbl = document.createElement("label");
+          lbl.className = "switch-label";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = isSet ? Boolean(curVal) : Boolean(item.def);
+          cb.onchange = () => applyGeneralSetting(item.section, item.key, cb.checked);
+          lbl.appendChild(cb);
+          ctrl.appendChild(lbl);
+        } else if (item.type === "global-clipboard") {
+          const lbl = document.createElement("label");
+          lbl.className = "switch-label";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = curVal === "+" || curVal === "*";
+          cb.onchange = () => {
+            if (cb.checked) applyGeneralSetting(item.section, item.key, "+");
+            else clearGeneralSetting(item.section, item.key);
+          };
+          lbl.appendChild(cb);
+          ctrl.appendChild(lbl);
+        } else if (item.type === "theme") {
+          const inp = document.createElement("input");
+          inp.type = "text";
+          inp.setAttribute("list", "mitosThemes");
+          inp.placeholder = item.placeholder || "";
+          inp.value = isSet ? String(curVal) : "";
+          let dl = document.getElementById("mitosThemes");
+          if (!dl) {
+            dl = document.createElement("datalist");
+            dl.id = "mitosThemes";
+            availableThemes.forEach((name) => {
+              const opt = document.createElement("option");
+              opt.value = name;
+              dl.appendChild(opt);
+            });
+            document.body.appendChild(dl);
+          }
+          inp.onchange = () => {
+            const v = inp.value.trim();
+            if (!v) clearGeneralSetting(item.section, item.key);
+            else applyGeneralSetting(item.section, item.key, v);
+          };
+          ctrl.appendChild(inp);
+        } else if (item.type === "select") {
+          const sel = document.createElement("select");
+          item.options.forEach((optVal) => {
+            const opt = document.createElement("option");
+            opt.value = optVal;
+            opt.textContent = optVal === "" ? `Default (${item.def})` : optVal;
+            sel.appendChild(opt);
+          });
+          sel.value = isSet ? String(curVal) : "";
+          sel.onchange = () => {
+            if (sel.value === "") clearGeneralSetting(item.section, item.key);
+            else applyGeneralSetting(item.section, item.key, sel.value);
+          };
+          ctrl.appendChild(sel);
+        } else if (item.type === "number") {
+          const inp = document.createElement("input");
+          inp.type = "number";
+          inp.placeholder = item.placeholder || "";
+          inp.value = isSet ? String(curVal) : "";
+          inp.onchange = () => {
+            const v = inp.value.trim();
+            if (!v) clearGeneralSetting(item.section, item.key);
+            else applyGeneralSetting(item.section, item.key, Number(v));
+          };
+          ctrl.appendChild(inp);
+        } else {
+          const inp = document.createElement("input");
+          inp.type = "text";
+          inp.placeholder = item.placeholder || "";
+          inp.value = isSet ? String(curVal) : "";
+          inp.onchange = () => {
+            const v = inp.value.trim();
+            if (!v) clearGeneralSetting(item.section, item.key);
+            else applyGeneralSetting(item.section, item.key, v);
+          };
+          ctrl.appendChild(inp);
+        }
+
+        if (isSet) {
+          const rst = document.createElement("button");
+          rst.type = "button";
+          rst.className = "setting-reset";
+          rst.textContent = "↺";
+          rst.title = "Remove from config.toml (use Mitos default)";
+          rst.onclick = () => clearGeneralSetting(item.section, item.key);
+          ctrl.appendChild(rst);
+        }
+
+        row.appendChild(meta);
+        row.appendChild(ctrl);
+        card.appendChild(row);
+      });
+
+      root.appendChild(card);
+    });
+
+    // Other / Custom settings already in config.toml + Add Setting form
+    const extras = [];
+    function collectExtras(obj, path) {
+      if (!isPlainObject(obj)) return;
+      for (const [k, v] of Object.entries(obj)) {
+        const next = path.concat([k]);
+        if (isPlainObject(v)) collectExtras(v, next);
+        else if (!knownKeys.has(next.join("."))) {
+          extras.push({ section: path, key: k, val: v });
+        }
+      }
+    }
+    collectExtras(current, []);
+
+    const extraCard = document.createElement("div");
+    extraCard.className = "card";
+    extraCard.style.gridColumn = "1 / -1";
+    extraCard.innerHTML = `<div class="card-head"><h2 class="card-title">Other Settings in config.toml</h2></div>`;
+
+    if (extras.length === 0) {
+      const empty = document.createElement("div");
+      empty.style.cssText = "color:var(--muted);font-size:12.5px;";
+      empty.textContent = "No extra non-keybind settings yet. Add any Mitos option below.";
+      extraCard.appendChild(empty);
+    } else {
+      extras.forEach((ex) => {
+        const row = document.createElement("div");
+        row.className = "setting-row";
+        const keyEl = document.createElement("div");
+        keyEl.className = "setting-key";
+        keyEl.style.color = "var(--text)";
+        keyEl.textContent = [...ex.section, ex.key].join(".");
+
+        const ctrl = document.createElement("div");
+        ctrl.className = "setting-ctrl";
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.value = typeof ex.val === "string" ? ex.val : JSON.stringify(ex.val);
+        inp.onchange = () => {
+          const raw = inp.value.trim();
+          let parsedVal = raw;
+          if (raw === "true") parsedVal = true;
+          else if (raw === "false") parsedVal = false;
+          else if (/^-?\d+(\.\d+)?$/.test(raw)) parsedVal = Number(raw);
+          applyGeneralSetting(ex.section, ex.key, parsedVal);
+        };
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "setting-reset";
+        del.textContent = "×";
+        del.title = "Remove setting";
+        del.onclick = () => clearGeneralSetting(ex.section, ex.key);
+
+        ctrl.appendChild(inp);
+        ctrl.appendChild(del);
+        row.appendChild(keyEl);
+        row.appendChild(ctrl);
+        extraCard.appendChild(row);
+      });
+    }
+
+    const addRow = document.createElement("div");
+    addRow.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;";
+    addRow.innerHTML = `
+      <input type="text" id="newSetSection" placeholder="Section (e.g. editor)" value="editor" style="flex:1;min-width:130px;padding:6px 8px;font-size:12px;">
+      <input type="text" id="newSetKey" placeholder="Key (e.g. rulers)" style="flex:1;min-width:130px;padding:6px 8px;font-size:12px;">
+      <input type="text" id="newSetVal" placeholder="Value (e.g. true, 80, bar)" style="flex:1;min-width:130px;padding:6px 8px;font-size:12px;">
+      <button type="button" id="addSetBtn" class="primary" style="padding:6px 12px;">+ Add</button>
+    `;
+    addRow.querySelector("#addSetBtn").onclick = () => {
+      const secStr = addRow.querySelector("#newSetSection").value.trim();
+      const k = addRow.querySelector("#newSetKey").value.trim();
+      const vRaw = addRow.querySelector("#newSetVal").value.trim();
+      if (!k || !vRaw) { showToast("Enter a key and value"); return; }
+      const sec = secStr ? secStr.split(".").map((s) => s.trim()).filter(Boolean) : [];
+      let v = vRaw;
+      if (vRaw === "true") v = true;
+      else if (vRaw === "false") v = false;
+      else if (/^-?\d+(\.\d+)?$/.test(vRaw)) v = Number(vRaw);
+      applyGeneralSetting(sec, k, v);
+      showToast(`Added ${[...sec, k].join(".")}`);
+    };
+    extraCard.appendChild(addRow);
+    root.appendChild(extraCard);
   }
 
   function countDefaultLeaves(node) {
@@ -1650,9 +2259,10 @@ h = ":toggle soft-wrap.enable"
     el.innerHTML = "";
     modes.forEach((m) => {
       const btn = document.createElement("button");
-      btn.className = "seg-btn" + (state.mode === m ? " active" : "");
+      btn.className = "seg-btn" + (state.activeTab === "keys" && state.mode === m ? " active" : "");
       btn.textContent = m;
       btn.onclick = () => {
+        state.activeTab = "keys";
         state.mode = m;
         state.prefixPath = [];
         state.selectedKey = null;
@@ -1660,6 +2270,20 @@ h = ":toggle soft-wrap.enable"
       };
       el.appendChild(btn);
     });
+
+    const sep = document.createElement("span");
+    sep.className = "tab-sep";
+    el.appendChild(sep);
+
+    const setBtn = document.createElement("button");
+    setBtn.className = "seg-btn" + (state.activeTab === "settings" ? " active" : "");
+    setBtn.textContent = "Settings";
+    setBtn.onclick = () => {
+      state.activeTab = "settings";
+      hideKeyTooltip();
+      render();
+    };
+    el.appendChild(setBtn);
   }
 
   function renderBreadcrumbAndSubmaps() {
@@ -2117,6 +2741,8 @@ h = ":toggle soft-wrap.enable"
     const typeSel = document.getElementById("bindType");
     const cmdInput = document.getElementById("cmdInput");
     const seqInput = document.getElementById("seqInput");
+    const macroInput = document.getElementById("macroInput");
+    const macroWrapToggle = document.getElementById("macroWrapToggle");
     const menuNameInput = document.getElementById("menuNameInput");
     const curMenuName = getMenuName(state.mode, state.prefixPath.concat([k]));
 
@@ -2132,8 +2758,27 @@ h = ":toggle soft-wrap.enable"
     menuNameInput.value = curMenuName || "";
     renderLinkedKeysUI(curMenuName);
 
+    const isWrappedMacro = Array.isArray(effVal)
+      && effVal.length === 3
+      && effVal[0] === "insert_mode"
+      && typeof effVal[1] === "string" && effVal[1].startsWith("@")
+      && effVal[2] === "normal_mode";
+
+    macroInput.value = "";
     if (isPlainObject(effVal)) {
       typeSel.value = "prefix";
+      cmdInput.value = "";
+      seqInput.value = "";
+    } else if (isWrappedMacro) {
+      typeSel.value = "macro";
+      macroInput.value = effVal[1].slice(1);
+      macroWrapToggle.checked = true;
+      cmdInput.value = "";
+      seqInput.value = "";
+    } else if (typeof effVal === "string" && effVal.startsWith("@")) {
+      typeSel.value = "macro";
+      macroInput.value = effVal.slice(1);
+      macroWrapToggle.checked = false;
       cmdInput.value = "";
       seqInput.value = "";
     } else if (Array.isArray(effVal)) {
@@ -2148,6 +2793,7 @@ h = ":toggle soft-wrap.enable"
       typeSel.value = "command";
       cmdInput.value = effVal !== undefined ? String(effVal) : "";
       seqInput.value = "";
+      macroWrapToggle.checked = state.mode !== "insert";
     }
     updateBindTypeUI();
   }
@@ -2191,10 +2837,28 @@ h = ":toggle soft-wrap.enable"
   function updateBindTypeUI() {
     const t = document.getElementById("bindType").value;
     document.getElementById("cmdField").style.display = t === "command" ? "flex" : "none";
+    document.getElementById("macroField").style.display = t === "macro" ? "flex" : "none";
     document.getElementById("seqField").style.display = t === "sequence" ? "flex" : "none";
     document.getElementById("prefixInfo").style.display = t === "prefix" ? "flex" : "none";
     document.getElementById("saveEnterBtn").style.display = t === "prefix" ? "inline-flex" : "none";
+    document.getElementById("macroWrapRow").style.display = state.mode === "insert" ? "none" : "inline-flex";
+    document.getElementById("linkAllNonInsertRow").style.display = state.prefixPath.length === 0 ? "inline-flex" : "none";
+    updateMacroPreview();
     updateMirrorModeUI();
+  }
+
+  function buildMacroValue() {
+    const raw = document.getElementById("macroInput").value;
+    if (!raw) return null;
+    const macroStr = "@" + raw;
+    const wrap = state.mode !== "insert" && document.getElementById("macroWrapToggle").checked;
+    return wrap ? ["insert_mode", macroStr, "normal_mode"] : macroStr;
+  }
+
+  function updateMacroPreview() {
+    const el = document.getElementById("macroPreview");
+    const val = buildMacroValue();
+    el.textContent = val ? "Saves as: " + JSON.stringify(val) : "";
   }
 
   function updateMirrorModeUI() {
@@ -2208,7 +2872,7 @@ h = ":toggle soft-wrap.enable"
     } else {
       cmdDescEl.textContent = "";
     }
-    const canMirror = (state.mode === "normal" || state.mode === "select") && t !== "prefix";
+    const canMirror = state.prefixPath.length === 0 && (state.mode === "normal" || state.mode === "select") && t !== "prefix";
     if (!canMirror) {
       wrap.style.display = "none";
       return;
@@ -2238,6 +2902,7 @@ h = ":toggle soft-wrap.enable"
     const thisPath = state.prefixPath.concat([k]);
     const thisPathKey = menuPathKey([state.mode, ...thisPath]);
     const shouldMirror = document.getElementById("mirrorModeToggle").checked
+      && state.prefixPath.length === 0
       && (state.mode === "normal" || state.mode === "select")
       && t !== "prefix";
     const mirrorTarget = state.mode === "normal" ? "select" : "normal";
@@ -2252,6 +2917,15 @@ h = ":toggle soft-wrap.enable"
       layer[k] = val;
       delete state.menuGroups[thisPathKey];
       if (shouldMirror) setPathValue(mirrorTarget, thisPath, mirrorValueForMode(val, mirrorTarget));
+    } else if (t === "macro") {
+      const val = buildMacroValue();
+      if (!val) {
+        showToast("Enter text or keys to insert");
+        return;
+      }
+      layer[k] = val;
+      delete state.menuGroups[thisPathKey];
+      if (shouldMirror) setPathValue(mirrorTarget, thisPath, cloneVal(val));
     } else if (t === "sequence") {
       const lines = document.getElementById("seqInput").value
         .split("\n")
@@ -2265,25 +2939,32 @@ h = ":toggle soft-wrap.enable"
       delete state.menuGroups[thisPathKey];
       if (shouldMirror) setPathValue(mirrorTarget, thisPath, mirrorValueForMode(lines, mirrorTarget));
     } else if (t === "prefix") {
-      const linkAll = document.getElementById("linkAllNonInsert").checked;
+      const linkAll = state.prefixPath.length === 0 && document.getElementById("linkAllNonInsert").checked;
       let desiredMenu = document.getElementById("menuNameInput").value.trim();
       if (linkAll && !desiredMenu) desiredMenu = k;
       if (desiredMenu) {
+        const alreadyInMenu = state.menuGroups[thisPathKey] === desiredMenu;
         const existingPeers = getLinkedPaths(desiredMenu).filter((e) => e.fullKey !== thisPathKey);
-        if (existingPeers.length > 0 && (!isPlainObject(layer[k]) || Object.keys(layer[k]).length === 0)) {
-          // Copy bindings from existing shared menu into this newly linked key
-          const peerNode = getNode(state.keys, existingPeers[0].mode, existingPeers[0].path) || {};
-          layer[k] = cloneVal(peerNode);
-        } else if (!isPlainObject(layer[k])) {
-          layer[k] = {};
+        let srcObj = isPlainObject(layer[k]) ? layer[k] : {};
+        let srcDef = getNode(MITOS_DEFAULTS, state.mode, thisPath);
+        if (existingPeers.length > 0 && (!alreadyInMenu || Object.keys(srcObj).length === 0)) {
+          // Newly linking this key to an existing shared menu: pull full bindings + defaults from peer
+          const peer = existingPeers.find((e) => getNode(MITOS_DEFAULTS, e.mode, e.path)) || existingPeers[0];
+          srcObj = getNode(state.keys, peer.mode, peer.path) || {};
+          srcDef = getNode(MITOS_DEFAULTS, peer.mode, peer.path);
+        } else if (existingPeers.length > 0 && !srcDef) {
+          // Re-saving an existing member: if a peer is a built-in default menu, ensure defaults are present
+          const defPeer = existingPeers.find((e) => getNode(MITOS_DEFAULTS, e.mode, e.path));
+          if (defPeer) srcDef = getNode(MITOS_DEFAULTS, defPeer.mode, defPeer.path);
         }
+        layer[k] = srcObj;
         state.menuGroups[thisPathKey] = desiredMenu;
         if (linkAll) {
           for (const m of nonInsertModes()) {
             state.menuGroups[menuPathKey([m, ...thisPath])] = desiredMenu;
           }
         }
-        syncMenuGroup(desiredMenu, layer[k]);
+        syncMenuGroup(desiredMenu, srcObj, srcDef);
       } else {
         if (!isPlainObject(layer[k])) layer[k] = {};
         delete state.menuGroups[thisPathKey];
@@ -2398,8 +3079,35 @@ h = ":toggle soft-wrap.enable"
     });
   }
 
+  // Ensure any shared menu linked to a built-in default menu (like normal.space -> insert.d.space)
+  // has those default bindings materialized into non-default peers in the serialized config.toml.
+  function buildSerializedKeys() {
+    const out = cloneVal(state.keys);
+    const menus = new Set(Object.values(state.menuGroups));
+    for (const menuName of menus) {
+      const peers = getLinkedPaths(menuName);
+      const defPeer = peers.find((p) => getNode(MITOS_DEFAULTS, p.mode, p.path));
+      if (!defPeer) continue;
+      const baseDef = getNode(MITOS_DEFAULTS, defPeer.mode, defPeer.path);
+      const baseUser = getNode(out, defPeer.mode, defPeer.path) || {};
+      const full = deepMergeDefaults(baseDef, baseUser);
+      for (const p of peers) {
+        if (getNode(MITOS_DEFAULTS, p.mode, p.path)) continue;
+        // Write full materialized menu into non-default peer (e.g. insert.d.space)
+        if (!isPlainObject(out[p.mode])) out[p.mode] = {};
+        let cur = out[p.mode];
+        for (let i = 0; i < p.path.length - 1; i++) {
+          if (!isPlainObject(cur[p.path[i]])) cur[p.path[i]] = {};
+          cur = cur[p.path[i]];
+        }
+        cur[p.path[p.path.length - 1]] = cloneVal(full);
+      }
+    }
+    return out;
+  }
+
   function currentTomlText() {
-    return serializeMitosConfig(state.keys, state.preservedLines, state.menuGroups);
+    return serializeMitosConfig(buildSerializedKeys(), state.preservedLines, state.menuGroups);
   }
 
   function syncRawToml() {
@@ -2490,7 +3198,9 @@ h = ":toggle soft-wrap.enable"
     if ((def.id === "space" || def.id === "ret") && focused && focused.matches("button:not(.key), summary")) return false;
     e.preventDefault();
     if (e.repeat) return true;
-    state.mods = { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey };
+    if (e.shiftKey || e.ctrlKey || e.altKey) {
+      state.mods = { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey };
+    }
     const { keyName, userVal, defaultVal } = lookupKey(def, getUserLayer(), getDefaultLayer());
     const eff = userVal !== undefined ? userVal : (state.hideDefaults ? undefined : defaultVal);
     if (state.selectedKey === keyName && isPlainObject(eff)) {
@@ -2505,8 +3215,28 @@ h = ":toggle soft-wrap.enable"
     return true;
   }
 
-  // Global shortcuts: ⌘Z undo, ⇧⌘Z redo, Escape steps up / clears modifiers
+  document.getElementById("keyCaptureToggle").addEventListener("change", (e) => {
+    state.keyCapture = e.target.checked;
+  });
+
+  const matchThemeToggle = document.getElementById("matchThemeToggle");
+  matchThemeToggle.checked = state.matchTheme;
+  matchThemeToggle.addEventListener("change", (e) => {
+    state.matchTheme = e.target.checked;
+    try { localStorage.setItem("mitos_match_theme", state.matchTheme ? "1" : "0"); } catch (_) {}
+    applyWebUiTheme();
+  });
+
+  // Global shortcuts: ⌘K jump to mode/menu, ⌘Z undo, ⇧⌘Z redo, Escape steps up / clears modifiers
   window.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      openCmdk();
+      return;
+    }
+
+    if (cmdkDialog.open) return;
+
     const tag = document.activeElement && document.activeElement.tagName;
     const inField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 
@@ -2517,9 +3247,19 @@ h = ":toggle soft-wrap.enable"
       return;
     }
 
-    if (inField) return;
+    if (inField || state.activeTab !== "keys") return;
     if (e.key !== "Escape") {
-      if (!e.metaKey) selectFromPhysicalKey(e);
+      if (state.keyCapture && !e.metaKey) {
+        const modMap = { Shift: "shift", Control: "ctrl", Alt: "alt" };
+        if (modMap[e.key]) {
+          if (!e.repeat) {
+            state.mods[modMap[e.key]] = !state.mods[modMap[e.key]];
+            render();
+          }
+          return;
+        }
+        selectFromPhysicalKey(e);
+      }
       return;
     }
     if (state.prefixPath.length > 0) {
@@ -2541,6 +3281,19 @@ h = ":toggle soft-wrap.enable"
 
   document.getElementById("bindType").addEventListener("change", updateBindTypeUI);
   document.getElementById("cmdInput").addEventListener("input", updateMirrorModeUI);
+  document.getElementById("macroInput").addEventListener("input", updateMacroPreview);
+  document.getElementById("macroWrapToggle").addEventListener("change", updateMacroPreview);
+  document.getElementById("macroInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); saveSelectedBinding(false); }
+  });
+  document.getElementById("macroKeyChips").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-insert]");
+    if (!btn) return;
+    const input = document.getElementById("macroInput");
+    input.value += btn.dataset.insert;
+    input.focus();
+    updateMacroPreview();
+  });
   document.getElementById("saveBindBtn").addEventListener("click", () => saveSelectedBinding(false));
   document.getElementById("saveEnterBtn").addEventListener("click", () => saveSelectedBinding(true));
   document.getElementById("cmdInput").addEventListener("keydown", (e) => {
@@ -2586,13 +3339,14 @@ h = ":toggle soft-wrap.enable"
     const layer = ensureUserLayer();
     const srcObj = isPlainObject(layer[state.selectedKey]) ? layer[state.selectedKey] : {};
     layer[state.selectedKey] = srcObj;
-    const linkAll = document.getElementById("linkAllNonInsert").checked;
+    const linkAll = state.prefixPath.length === 0 && document.getElementById("linkAllNonInsert").checked;
     const targetModes = linkAll ? nonInsertModes() : [state.mode];
     for (const m of targetModes) {
       state.menuGroups[menuPathKey([m, ...state.prefixPath, state.selectedKey])] = menuName;
       state.menuGroups[menuPathKey([m, ...state.prefixPath, newKey])] = menuName;
     }
-    syncMenuGroup(menuName, srcObj);
+    const srcDef = getNode(MITOS_DEFAULTS, state.mode, state.prefixPath.concat([state.selectedKey]));
+    syncMenuGroup(menuName, srcObj, srcDef);
     input.value = "";
     persistToLocalStorage();
     setDirty(true);
@@ -2770,6 +3524,156 @@ h = ":toggle soft-wrap.enable"
     }
   });
 
+  // ⌘K Mode & Menu Quick Switcher
+  const cmdkDialog = document.getElementById("cmdkDialog");
+  const cmdkInput = document.getElementById("cmdkInput");
+  const cmdkList = document.getElementById("cmdkList");
+  let cmdkItems = [];
+  let cmdkIndex = 0;
+
+  function collectJumpTargets() {
+    const targets = [];
+    const modes = ["normal", "select", "insert"];
+    Object.keys(state.keys).forEach((m) => {
+      if (!modes.includes(m) && isPlainObject(state.keys[m])) modes.push(m);
+    });
+
+    function walkMenus(mode, path, uNode, dNode) {
+      const allKeys = new Set([
+        ...(isPlainObject(uNode) ? Object.keys(uNode) : []),
+        ...(isPlainObject(dNode) ? Object.keys(dNode) : []),
+      ]);
+      for (const k of allKeys) {
+        const u = isPlainObject(uNode) ? uNode[k] : undefined;
+        const d = isPlainObject(dNode) ? dNode[k] : undefined;
+        const eff = u !== undefined ? u : d;
+        if (!isPlainObject(eff)) continue;
+        const isCustom = u !== undefined;
+        if (state.hideDefaults && !isCustom) continue;
+        const nextPath = path.concat([k]);
+        const menuName = getMenuName(mode, nextPath);
+        const label = menuName
+          ? `🔗 ${menuName}`
+          : (!isCustom && SUBMAP_LABELS[k] ? SUBMAP_LABELS[k] : "");
+        const count = countSubmapEntries(u, d, state.hideDefaults);
+        targets.push({
+          type: "menu",
+          mode,
+          path: nextPath,
+          pathText: `${mode} › ${nextPath.join(" › ")}`,
+          label,
+          isCustom,
+          meta: `${count} binds`,
+        });
+        walkMenus(mode, nextPath, isPlainObject(u) ? u : null, isPlainObject(d) ? d : null);
+      }
+    }
+
+    targets.push({
+      type: "settings",
+      mode: null,
+      path: [],
+      pathText: "Settings",
+      label: "General config",
+      isCustom: true,
+      meta: "theme, editor…",
+    });
+
+    for (const mode of modes) {
+      const uRoot = state.keys[mode];
+      const dRoot = MITOS_DEFAULTS[mode];
+      targets.push({
+        type: "mode",
+        mode,
+        path: [],
+        pathText: mode,
+        label: "Mode",
+        isCustom: isPlainObject(uRoot),
+        meta: `${countSubmapEntries(uRoot, dRoot, state.hideDefaults)} keys`,
+      });
+      walkMenus(mode, [], uRoot, dRoot);
+    }
+    return targets;
+  }
+
+  function renderCmdkList() {
+    const q = cmdkInput.value.trim().toLowerCase();
+    const all = collectJumpTargets();
+    cmdkItems = all.filter((item) => {
+      if (!q) return true;
+      return item.pathText.toLowerCase().includes(q)
+        || item.label.toLowerCase().includes(q)
+        || item.mode.toLowerCase().includes(q);
+    });
+    if (cmdkIndex >= cmdkItems.length) cmdkIndex = Math.max(0, cmdkItems.length - 1);
+
+    cmdkList.innerHTML = "";
+    if (cmdkItems.length === 0) {
+      cmdkList.innerHTML = `<div style="color:var(--muted);padding:14px 10px;font-size:12.5px;">No matching modes or menus.</div>`;
+      return;
+    }
+
+    cmdkItems.forEach((item, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cmdk-item" + (idx === cmdkIndex ? " active" : "");
+      btn.innerHTML = `<span class="cmdk-left"><span class="cmdk-path"></span><span class="cmdk-name"></span></span><span class="cmdk-meta"></span>`;
+      btn.querySelector(".cmdk-path").textContent = item.pathText;
+      btn.querySelector(".cmdk-name").textContent = item.label;
+      btn.querySelector(".cmdk-meta").textContent = item.meta;
+      btn.onmouseenter = () => {
+        cmdkIndex = idx;
+        cmdkList.querySelectorAll(".cmdk-item").forEach((el, i) => el.classList.toggle("active", i === idx));
+      };
+      btn.onclick = () => jumpToCmdkItem(item);
+      cmdkList.appendChild(btn);
+    });
+  }
+
+  function jumpToCmdkItem(item) {
+    if (!item) return;
+    if (item.type === "settings") {
+      state.activeTab = "settings";
+    } else {
+      state.activeTab = "keys";
+      state.mode = item.mode;
+      state.prefixPath = item.path.slice();
+      state.selectedKey = null;
+    }
+    cmdkDialog.close();
+    render();
+  }
+
+  function openCmdk() {
+    if (cmdkDialog.open) {
+      cmdkDialog.close();
+      return;
+    }
+    cmdkInput.value = "";
+    cmdkIndex = 0;
+    renderCmdkList();
+    cmdkDialog.showModal();
+    cmdkInput.focus();
+  }
+
+  document.getElementById("cmdkBtn").addEventListener("click", openCmdk);
+  cmdkInput.addEventListener("input", () => { cmdkIndex = 0; renderCmdkList(); });
+  cmdkInput.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (cmdkItems.length) { cmdkIndex = (cmdkIndex + 1) % cmdkItems.length; renderCmdkList(); }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (cmdkItems.length) { cmdkIndex = (cmdkIndex - 1 + cmdkItems.length) % cmdkItems.length; renderCmdkList(); }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      jumpToCmdkItem(cmdkItems[cmdkIndex]);
+    }
+  });
+  cmdkDialog.addEventListener("click", (e) => {
+    if (e.target === cmdkDialog) cmdkDialog.close();
+  });
+
   // Close overflow menu when clicking an action or clicking outside
   const moreMenu = document.getElementById("moreMenu");
   moreMenu.addEventListener("click", (e) => {
@@ -2779,12 +3683,37 @@ h = ":toggle soft-wrap.enable"
     if (moreMenu.open && !moreMenu.contains(e.target)) moreMenu.removeAttribute("open");
   });
 
-  // Auto-load ~/.config/mitos/config.toml from local server, falling back to localStorage
-  loadFromServer(true).then((ok) => {
-    if (ok) return;
-    const saved = (() => { try { return localStorage.getItem("mitos_config_toml"); } catch (_) { return null; } })();
-    if (saved) loadTomlText(saved);
-    else render();
+  async function loadDefaultsFromServer(force) {
+    try {
+      const res = await fetch(force ? "/api/defaults?refresh=1" : "/api/defaults");
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (!data.defaults || !data.defaults.normal) return false;
+      Object.assign(MITOS_DEFAULTS, data.defaults);
+      if (force) {
+        render();
+        showToast(`Synced defaults (${data.version})`);
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  document.getElementById("syncDefaultsBtn").addEventListener("click", async () => {
+    const ok = await loadDefaultsFromServer(true);
+    if (!ok) showToast("Could not sync defaults (requires server.py + network)");
+  });
+
+  // Auto-load exact installed Mitos defaults + theme list + ~/.config/mitos/config.toml from local server
+  loadThemeListFromServer();
+  loadDefaultsFromServer(false).finally(() => {
+    loadFromServer(true).then((ok) => {
+      if (ok) return;
+      const saved = (() => { try { return localStorage.getItem("mitos_config_toml"); } catch (_) { return null; } })();
+      if (saved) loadTomlText(saved);
+      else render();
+    });
   });
 })();
 </script>

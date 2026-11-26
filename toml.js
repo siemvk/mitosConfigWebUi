@@ -418,9 +418,117 @@
     return parts.join("\n\n") + (parts.length ? "\n" : "");
   }
 
+  // Read all non-key settings from preservedLines into a nested object (top-level keys + [section.*]).
+  function readGeneralSettings(preservedLines) {
+    const out = {};
+    let section = [];
+    for (const raw of preservedLines || []) {
+      const stripped = stripComment(raw).trim();
+      if (!stripped) continue;
+      if (stripped.startsWith("[[")) { section = []; continue; }
+      if (stripped.startsWith("[") && stripped.endsWith("]")) {
+        section = parseKeyPath(stripped.slice(1, -1).trim());
+        continue;
+      }
+      const kv = splitKeyValue(stripped);
+      if (!kv) continue;
+      const keyPath = section.concat(parseKeyPath(kv[0]));
+      if (keyPath.length) setNested(out, keyPath, parseValue(kv[1]));
+    }
+    return out;
+  }
+
+  // Update or insert a setting inside preservedLines while keeping comments & other sections intact.
+  // `sectionPath` is e.g. [] for top-level (`theme`) or ["editor", "rainbow-brackets"].
+  function setGeneralSetting(preservedLines, sectionPath, key, value) {
+    const lines = (preservedLines || []).slice();
+    const targetSec = sectionPath.join(".");
+    const formattedLine = `${formatKey(key)} = ${formatValue(value)}`;
+
+    let curSec = "";
+    let sectionHeaderIdx = -1;
+    let sectionEndIdx = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const stripped = stripComment(lines[i]).trim();
+      if (!stripped) continue;
+      if (stripped.startsWith("[[")) {
+        if (curSec === targetSec && sectionEndIdx === -1) sectionEndIdx = i;
+        curSec = "\0";
+        continue;
+      }
+      if (stripped.startsWith("[") && stripped.endsWith("]")) {
+        if (curSec === targetSec && sectionEndIdx === -1) sectionEndIdx = i;
+        curSec = parseKeyPath(stripped.slice(1, -1).trim()).join(".");
+        if (curSec === targetSec) sectionHeaderIdx = i;
+        continue;
+      }
+      if (curSec === targetSec) {
+        const kv = splitKeyValue(stripped);
+        if (kv) {
+          const kp = parseKeyPath(kv[0]);
+          if (kp.length === 1 && kp[0] === key) {
+            lines[i] = formattedLine;
+            return lines;
+          }
+        }
+      }
+    }
+
+    if (targetSec === "") {
+      // Insert before first [section] header
+      const firstSec = lines.findIndex((l) => stripComment(l).trim().startsWith("["));
+      if (firstSec === -1) lines.push(formattedLine);
+      else lines.splice(firstSec, 0, formattedLine);
+      return lines;
+    }
+
+    if (sectionHeaderIdx !== -1) {
+      let insertAt = sectionEndIdx === -1 ? lines.length : sectionEndIdx;
+      while (insertAt > sectionHeaderIdx + 1 && lines[insertAt - 1].trim() === "") insertAt--;
+      lines.splice(insertAt, 0, formattedLine);
+      return lines;
+    }
+
+    // Append new section
+    if (lines.length && lines[lines.length - 1].trim() !== "") lines.push("");
+    lines.push("[" + sectionPath.map(formatKey).join(".") + "]");
+    lines.push(formattedLine);
+    return lines;
+  }
+
+  function removeGeneralSetting(preservedLines, sectionPath, key) {
+    const lines = (preservedLines || []).slice();
+    const targetSec = sectionPath.join(".");
+    let curSec = "";
+    for (let i = 0; i < lines.length; i++) {
+      const stripped = stripComment(lines[i]).trim();
+      if (!stripped) continue;
+      if (stripped.startsWith("[[")) { curSec = "\0"; continue; }
+      if (stripped.startsWith("[") && stripped.endsWith("]")) {
+        curSec = parseKeyPath(stripped.slice(1, -1).trim()).join(".");
+        continue;
+      }
+      if (curSec === targetSec) {
+        const kv = splitKeyValue(stripped);
+        if (kv) {
+          const kp = parseKeyPath(kv[0]);
+          if (kp.length === 1 && kp[0] === key) {
+            lines.splice(i, 1);
+            return lines;
+          }
+        }
+      }
+    }
+    return lines;
+  }
+
   const api = {
     parseMitosConfig,
     serializeMitosConfig,
+    readGeneralSettings,
+    setGeneralSetting,
+    removeGeneralSetting,
     parseKeyPath,
     formatKey,
     menuPathKey,

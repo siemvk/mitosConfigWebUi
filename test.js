@@ -1,5 +1,11 @@
 const assert = require("assert");
-const { parseMitosConfig, serializeMitosConfig } = require("./toml.js");
+const {
+  parseMitosConfig,
+  serializeMitosConfig,
+  readGeneralSettings,
+  setGeneralSetting,
+  removeGeneralSetting,
+} = require("./toml.js");
 const { MITOS_DEFAULTS, mirrorCommandForMode } = require("./defaults.js");
 
 const input = `theme = "modus-vivendi"
@@ -89,5 +95,20 @@ assert.strictEqual(mirrorCommandForMode("goto_line_start", "select"), "extend_to
 assert.strictEqual(mirrorCommandForMode("yank", "select"), "yank");
 assert.strictEqual(mirrorCommandForMode("extend_next_word_start", "normal"), "move_next_word_start");
 assert.strictEqual(mirrorCommandForMode("normal_mode", "normal"), "select_mode");
+
+// 7. General (non-keybind) settings read / set / remove round-trip
+let lines = parsed.preservedLines;
+const gen = readGeneralSettings(lines);
+assert.strictEqual(gen.theme, "modus-vivendi");
+assert.strictEqual(gen.editor["line-number"], "relative");
+lines = setGeneralSetting(lines, [], "theme", "dark_plus");
+lines = setGeneralSetting(lines, ["editor"], "cursorline", true);
+lines = setGeneralSetting(lines, ["editor", "soft-wrap"], "enable", true);
+const gen2 = readGeneralSettings(lines);
+assert.strictEqual(gen2.theme, "dark_plus");
+assert.strictEqual(gen2.editor.cursorline, true);
+assert.strictEqual(gen2.editor["soft-wrap"].enable, true);
+lines = removeGeneralSetting(lines, ["editor"], "cursorline");
+assert.strictEqual(readGeneralSettings(lines).editor.cursorline, undefined);
 
 console.log("All checks passed.");
